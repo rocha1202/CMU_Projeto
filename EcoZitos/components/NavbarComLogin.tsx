@@ -1,10 +1,12 @@
-// components/NavbarComLogin.tsx
-
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { colors } from "../theme/colors";
+import { useNavigation } from "@react-navigation/native";
+
 
 export default function NavbarComLogin() {
+    const navigation = useNavigation<any>();
+  
   return (
     <View style={styles.navbar}>
       <TouchableOpacity style={styles.navItem}>
@@ -22,7 +24,7 @@ export default function NavbarComLogin() {
         <Text style={styles.navText}>Profile</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navItem}>
+      <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Notifications")}>
         <Image source={require("../assets/Icons/Bell.png")} style={styles.icon} />
         <Text style={styles.navText}>Notifications</Text>
       </TouchableOpacity>
