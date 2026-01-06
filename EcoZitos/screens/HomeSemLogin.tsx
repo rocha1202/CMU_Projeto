@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { colors } from "../theme/colors";
-import NavbarSemLogin from "../components/NavbarSemLogin";
+import Navbar from "../components/Navbar";
 import challengesData from "../api/challenges.json";
 import { useNavigation } from "@react-navigation/native";
 
@@ -29,15 +29,24 @@ export default function HomeScreen() {
 
   const getImage = (path: string) => {
     if (path.includes("challenge1.png")) {
-      return require("../assets/challenge1.png");
+      return require("../assets//Challenges/challenge1.png");
     }
     if (path.includes("challenge2.png")) {
-      return require("../assets/challenge2.png");
+      return require("../assets/Challenges/challenge2.png");
     }
     if (path.includes("challenge3.png")) {
-      return require("../assets/challenge3.png");
+      return require("../assets/Challenges/challenge3.png");
     }
-    return require("../assets/challenge1.png");
+    if (path.includes("challenge4.png")) {
+      return require("../assets/Challenges/challenge4.png");
+    }
+    if (path.includes("challenge5.png")) {
+      return require("../assets/Challenges/challenge5.png");
+    }
+    if (path.includes("challenge6.png")) {
+      return require("../assets/Challenges/challenge6.png");
+    }
+    return require("../assets/Challenges/challenge1.png");
   };
 
   return (
@@ -49,8 +58,12 @@ export default function HomeScreen() {
         />
       </TouchableOpacity>
       <Text style={styles.title}>EcoZitos</Text>
-      <Text style={styles.subtitle}>Latest Articles</Text>
+      {/* Scrollable Content */}
       <ScrollView style={styles.container}>
+        {/* Latest Articles */}
+
+        <Text style={styles.subtitle}>Latest Articles</Text>
+
         {/* Carousel */}
         <FlatList
           data={carouselImages}
@@ -65,14 +78,12 @@ export default function HomeScreen() {
 
         {/* Challenges */}
         <Text style={styles.subtitle}>Challenges</Text>
-
         {challenges.map((item) => (
           <View
             key={item.id}
             style={[styles.card, item.id % 2 === 0 ? styles.cardReverse : null]}
           >
             <Image source={getImage(item.image)} style={styles.cardImage} />
-
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{item.title}</Text>
               <Text style={styles.cardText}>{item.text}</Text>
@@ -81,7 +92,9 @@ export default function HomeScreen() {
           </View>
         ))}
       </ScrollView>
-      <NavbarSemLogin />
+
+      {/* Bottom Navigation */}
+      <Navbar logged={false} />
     </SafeAreaView>
   );
 }
@@ -89,22 +102,40 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
     backgroundColor: colors.white,
+  },
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  topBarButton: {
+    fontSize: 16,
+    color: colors.primary,
+    fontWeight: "600",
   },
   title: {
     fontSize: 26,
     fontWeight: "800",
     color: colors.textPrimary,
     textAlign: "center",
-    marginTop: -15,
-    marginBottom: 8,
   },
   subtitle: {
     textAlign: "center",
     marginBottom: 20,
     fontSize: 20,
     color: colors.textPrimary,
+    fontWeight: "600",
+  },
+  articlesImage: {
+    width: width - 32,
+    height: 180,
+    borderRadius: 16,
+    marginBottom: 20,
   },
   carouselImage: {
     width: width - 32,
@@ -112,49 +143,41 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 12,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginVertical: 16,
-    color: colors.textPrimary,
-  },
-  cardImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
-  },
-
   card: {
     backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
     flexDirection: "row",
-
-    // ANDROID
     elevation: 5,
-
-    // iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
+  cardReverse: {
+    flexDirection: "row-reverse",
+  },
+  cardImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 12,
+  },
   cardContent: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 16,
+    justifyContent: "center",
   },
   cardTitle: {
     fontWeight: "700",
     marginBottom: 4,
+    fontSize: 16,
+    color: colors.textPrimary,
   },
   cardText: {
     fontSize: 13,
     color: "#555",
     lineHeight: 18,
-  },
-  cardReverse: {
-    flexDirection: "row-reverse",
   },
   link: {
     marginTop: 8,
@@ -163,7 +186,45 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textDecorationLine: "underline",
   },
-  icon: {
+  navButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 12,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+
+  navButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+
+  activeButton: {
+    backgroundColor: colors.primary,
+  },
+
+  navText: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 8,
+    color: colors.primary,
+  },
+
+  activeText: {
+    color: colors.white,
+  },
+
+  navIcon: {
+    width: 20,
+    height: 20,
+  },
+    icon: {
     width: 30,
     height: 30,
     marginLeft: 16,

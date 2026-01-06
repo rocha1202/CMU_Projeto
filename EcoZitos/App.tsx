@@ -7,6 +7,7 @@ import HomeSemLogin from "./screens/HomeSemLogin";
 import HomeComLogin from "./screens/HomeComLogin";
 import MyActivity from "./screens/MyActivity";
 import Notifications from "./screens/Notifications";
+import Profile from "./screens/Profile";
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,7 @@ export default function App() {
         <Stack.Screen name="HomeComLogin" component={HomeComLogin} />
         <Stack.Screen name="MyActivity" component={MyActivity} />
         <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen name="Profile" component={Profile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

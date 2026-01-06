@@ -14,12 +14,12 @@ export default function NavbarComLogin() {
         <Text style={styles.navText}>Search</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navItem}>
+      <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("HomeComLogin")}>
         <Image source={require("../assets/Icons/Home.png")} style={styles.icon} />
         <Text style={styles.navText}>Home</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navItem}>
+      <TouchableOpacity style={styles.navItem} onPress={()=> navigation.navigate("Profile")}>
         <Image source={require("../assets/Icons/Profile.png")} style={styles.icon} />
         <Text style={styles.navText}>Profile</Text>
       </TouchableOpacity>

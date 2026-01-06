@@ -29,15 +29,24 @@ export default function HomeScreen() {
 
   const getImage = (path: string) => {
     if (path.includes("challenge1.png")) {
-      return require("../assets/challenge1.png");
+      return require("../assets//Challenges/challenge1.png");
     }
     if (path.includes("challenge2.png")) {
-      return require("../assets/challenge2.png");
+      return require("../assets/Challenges/challenge2.png");
     }
     if (path.includes("challenge3.png")) {
-      return require("../assets/challenge3.png");
+      return require("../assets/Challenges/challenge3.png");
     }
-    return require("../assets/challenge1.png");
+    if (path.includes("challenge4.png")) {
+      return require("../assets/Challenges/challenge4.png");
+    }
+    if (path.includes("challenge5.png")) {
+      return require("../assets/Challenges/challenge5.png");
+    }
+    if (path.includes("challenge6.png")) {
+      return require("../assets/Challenges/challenge6.png");
+    }
+    return require("../assets/Challenges/challenge1.png");
   };
 
   return (

@@ -25,5 +25,32 @@
     "dateStart": "12/01/2025",
     "dateEnd": "12/01/2026",
     "participants": 20
+  },
+  {
+    "id": 4,
+    "title": "Too Good To Go Away",
+    "text": "Join the fight against food waste! Learn how to plan meals, store food properly, and get creative with leftovers. Every bite counts in saving food and helping the planet.",
+    "image": "../assets/challenge4.png",
+    "dateStart": "12/01/2025",
+    "dateEnd": "12/01/2026",
+    "participants": 20
+  },
+  {
+    "id": 5,
+    "title": "Green Commuter Challenge",
+    "text": "Discover fun and eco-friendly ways to get around! Walk, bike, or use public transport to reduce pollution and make your daily commute a green adventure.",
+    "image": "../assets/challenge5.png",
+    "dateStart": "12/01/2025",
+    "dateEnd": "12/01/2026",
+    "participants": 20
+  },
+  {
+    "id": 6,
+    "title": "Plastic-Free Pioneer",
+    "text": "Take the lead in reducing plastic waste! Learn about alternatives to single-use plastics and how to make sustainable choices that protect our oceans and wildlife.",
+    "image": "../assets/challenge6.png",
+    "dateStart": "12/01/2025",
+    "dateEnd": "12/01/2026",
+    "participants": 20
   }
 ]

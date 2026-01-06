@@ -12,7 +12,7 @@ import { colors } from "../theme/colors";
 import Navbar from "../components/Navbar";
 import { useNavigation } from "@react-navigation/native";
 
-export default function NotificationsScreen() {
+export default function Notifications() {
   const navigation = useNavigation<any>();
 
   const notifications = [
