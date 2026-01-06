@@ -9,7 +9,7 @@ export default function NavbarComLogin() {
   
   return (
     <View style={styles.navbar}>
-      <TouchableOpacity style={styles.navItem}>
+      <TouchableOpacity style={styles.navItem} onPress={()=> navigation.navigate("Search")}>
         <Image source={require("../assets/Icons/Search.png")} style={styles.icon} />
         <Text style={styles.navText}>Search</Text>
       </TouchableOpacity>
