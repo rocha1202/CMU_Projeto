@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { colors } from "../theme/colors";
-import NavbarSemLogin from "../components/NavbarSemLogin";
+import Navbar from "../components/Navbar";
 import challengesData from "../api/challenges.json";
 import { useNavigation } from "@react-navigation/native";
 
@@ -46,17 +46,19 @@ export default function HomeScreen() {
       <View style={styles.navButtons}>
         <TouchableOpacity style={[styles.navButton, styles.activeButton]}>
           <Image
-            source={require("../assets/Icons/Home1.png")}
+            source={require("../assets/Icons/Home.png")}
             style={[styles.navIcon, {tintColor: colors.white}]}
           />
           <Text style={[styles.navText, styles.activeText]}>Home</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navButton}>
+        <TouchableOpacity style={styles.navButton}
+        onPress={() => navigation.navigate("MyActivity")}>
           <Image
-            source={require("../assets/Icons/Home1.png")}
+            source={require("../assets/Icons/Home.png")}
             style={[styles.navIcon, {tintColor: colors.primary}]}
           />
+          
           <Text style={styles.navText}>My activity</Text>
         </TouchableOpacity>
       </View>
@@ -97,7 +99,7 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <NavbarSemLogin />
+      <Navbar logged={true} />
     </SafeAreaView>
   );
 }
