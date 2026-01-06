@@ -1,19 +1,20 @@
 import * as React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 
+
 export default function SignUpScreen() {
-      const navigation = useNavigation<any>();
-    
+  const navigation = useNavigation<any>();
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
@@ -22,7 +23,6 @@ export default function SignUpScreen() {
       >
         <Text style={styles.title}>EcoZitos</Text>
         <Text style={styles.subtitle}>Signup</Text>
-
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -31,7 +31,6 @@ export default function SignUpScreen() {
             style={styles.input}
           />
         </View>
-
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Password</Text>
           <TextInput
@@ -41,7 +40,6 @@ export default function SignUpScreen() {
             style={styles.input}
           />
         </View>
-
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Username</Text>
           <TextInput
@@ -51,7 +49,6 @@ export default function SignUpScreen() {
             style={styles.input}
           />
         </View>
-
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Type</Text>
           <TextInput
@@ -61,12 +58,11 @@ export default function SignUpScreen() {
             style={styles.input}
           />
         </View>
-
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-
-
+           <TouchableOpacity style={styles.button}>
+             <Text style={styles.buttonText} onPress={() => navigation.navigate("HomeComLogin")}>
+               Sign In
+             </Text>
+           </TouchableOpacity>
         <Text style={styles.footerText}>
           Do you already have an account?{" "}
           <Text
@@ -76,7 +72,9 @@ export default function SignUpScreen() {
             Sign in
           </Text>
         </Text>
-        <Text style={styles.skip}>Skip</Text>
+        <Text style={styles.skip} onPress={() => navigation.navigate("HomeSemLogin")}>
+          Skip
+        </Text>
       </LinearGradient>
     </SafeAreaView>
   );

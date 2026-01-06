@@ -6,4 +6,5 @@ export const colors = {
   textPrimary: "#2F8F83",
   border: "#C8DAD6",
   white: "#FFFFFF",
+  black: "#000000",
 };

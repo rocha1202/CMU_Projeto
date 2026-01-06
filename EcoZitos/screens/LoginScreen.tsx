@@ -1,4 +1,5 @@
 import * as React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -6,7 +7,6 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../theme/colors";
@@ -26,10 +26,8 @@ export default function LoginScreen() {
           style={styles.image}
           resizeMode="contain"
         />
-
         <Text style={styles.title}>EcoZitos</Text>
         <Text style={styles.subtitle}>Sign in</Text>
-
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -38,7 +36,6 @@ export default function LoginScreen() {
             style={styles.input}
           />
         </View>
-
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Password</Text>
           <TextInput
@@ -48,11 +45,11 @@ export default function LoginScreen() {
             style={styles.input}
           />
         </View>
-
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Sign In</Text>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("HomeComLogin")}>
+          <Text style={styles.buttonText} >
+            Sign In
+          </Text>
         </TouchableOpacity>
-
         <Text style={styles.footerText}>
           Are you new?{" "}
           <Text
@@ -62,8 +59,9 @@ export default function LoginScreen() {
             Create an account
           </Text>
         </Text>
-
-        <Text style={styles.skip}>Skip</Text>
+        <Text style={styles.skip} onPress={() => navigation.navigate("HomeSemLogin")}>
+          Skip
+        </Text>
       </LinearGradient>
     </SafeAreaView>
   );

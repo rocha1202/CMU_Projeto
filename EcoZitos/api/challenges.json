@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "title": "Recycling Hero Challenge",
+    "text": "Learn how to sort your waste and give new life to plastic, paper, and glass. Become a real recycling hero by completing fun tasks that help keep our planet clean!",
+    "image": "../assets/challenge1.png",
+    "dateStart": "12/01/2025",
+    "dateEnd": "12/01/2026",
+    "participants": 20
+  },
+  {
+    "id": 2,
+    "title": "Save water, Save the Planet",
+    "text": "Discover how small actions can save big amounts of water! Practice turning off the tap, using only what you need, and protecting one of Earth’s most precious resources.",
+    "image": "../assets/challenge2.png",
+    "dateStart": "12/01/2025",
+    "dateEnd": "12/01/2026",
+    "participants": 20
+  },
+  {
+    "id": 3,
+    "title": "Switch Off & Shine",
+    "text": "Become an energy saver! Learn when to turn off lights, unplug devices, and reduce electricity waste. Every switch you flip helps the planet shine brighter.",
+    "image": "../assets/challenge3.png",
+    "dateStart": "12/01/2025",
+    "dateEnd": "12/01/2026",
+    "participants": 20
+  }
+]

@@ -42,15 +42,31 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Image
-          source={require("../assets/Icons/Exit@.png")}
-          style={styles.icon}
-        />
-      </TouchableOpacity>
-      <Text style={styles.title}>EcoZitos</Text>
-      <Text style={styles.subtitle}>Latest Articles</Text>
+      {/* Top Navigation */}
+      <View style={styles.navButtons}>
+        <TouchableOpacity style={[styles.navButton, styles.activeButton]}>
+          <Image
+            source={require("../assets/Icons/Home1.png")}
+            style={[styles.navIcon, {tintColor: colors.white}]}
+          />
+          <Text style={[styles.navText, styles.activeText]}>Home</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navButton}>
+          <Image
+            source={require("../assets/Icons/Home1.png")}
+            style={[styles.navIcon, {tintColor: colors.primary}]}
+          />
+          <Text style={styles.navText}>My activity</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Scrollable Content */}
       <ScrollView style={styles.container}>
+        {/* Latest Articles */}
+
+        <Text style={styles.subtitle}>Latest Articles</Text>
+
         {/* Carousel */}
         <FlatList
           data={carouselImages}
@@ -65,14 +81,12 @@ export default function HomeScreen() {
 
         {/* Challenges */}
         <Text style={styles.subtitle}>Challenges</Text>
-
         {challenges.map((item) => (
           <View
             key={item.id}
             style={[styles.card, item.id % 2 === 0 ? styles.cardReverse : null]}
           >
             <Image source={getImage(item.image)} style={styles.cardImage} />
-
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{item.title}</Text>
               <Text style={styles.cardText}>{item.text}</Text>
@@ -81,6 +95,8 @@ export default function HomeScreen() {
           </View>
         ))}
       </ScrollView>
+
+      {/* Bottom Navigation */}
       <NavbarSemLogin />
     </SafeAreaView>
   );
@@ -89,22 +105,40 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
     backgroundColor: colors.white,
+  },
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  topBarButton: {
+    fontSize: 16,
+    color: colors.primary,
+    fontWeight: "600",
   },
   title: {
     fontSize: 26,
     fontWeight: "800",
     color: colors.textPrimary,
     textAlign: "center",
-    marginTop: -15,
-    marginBottom: 8,
   },
   subtitle: {
     textAlign: "center",
     marginBottom: 20,
     fontSize: 20,
     color: colors.textPrimary,
+    fontWeight: "600",
+  },
+  articlesImage: {
+    width: width - 32,
+    height: 180,
+    borderRadius: 16,
+    marginBottom: 20,
   },
   carouselImage: {
     width: width - 32,
@@ -112,49 +146,41 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 12,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginVertical: 16,
-    color: colors.textPrimary,
-  },
-  cardImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
-  },
-
   card: {
     backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
     flexDirection: "row",
-
-    // ANDROID
     elevation: 5,
-
-    // iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
+  cardReverse: {
+    flexDirection: "row-reverse",
+  },
+  cardImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 12,
+  },
   cardContent: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 16,
+    justifyContent: "center",
   },
   cardTitle: {
     fontWeight: "700",
     marginBottom: 4,
+    fontSize: 16,
+    color: colors.textPrimary,
   },
   cardText: {
     fontSize: 13,
     color: "#555",
     lineHeight: 18,
-  },
-  cardReverse: {
-    flexDirection: "row-reverse",
   },
   link: {
     marginTop: 8,
@@ -163,9 +189,42 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textDecorationLine: "underline",
   },
-  icon: {
-    width: 30,
-    height: 30,
-    marginLeft: 16,
-  },
+  navButtons: {
+  flexDirection: "row",
+  justifyContent: "center",
+  gap: 12,
+  marginTop: 10,
+  marginBottom: 10,
+},
+
+navButton: {
+  flexDirection: "row",
+  alignItems: "center",
+  paddingVertical: 8,
+  paddingHorizontal: 16,
+  borderRadius: 20,
+  backgroundColor: colors.white,
+  borderWidth: 1,
+  borderColor: colors.primary,
+},
+
+activeButton: {
+  backgroundColor: colors.primary,
+},
+
+navText: {
+  fontSize: 16,
+  fontWeight: "600",
+  marginLeft: 8,
+  color: colors.primary,
+},
+
+activeText: {
+  color: colors.white,
+},
+
+navIcon: {
+  width: 20,
+  height: 20,
+},
 });
