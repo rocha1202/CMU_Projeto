@@ -113,7 +113,7 @@ export default function Profile() {
           <Text style={styles.subInfo}>10 Flowers</Text>
         </View>
 
-        <TouchableOpacity style={styles.settingsButton}>
+        <TouchableOpacity style={styles.settingsButton}  onPress={() => navigation.navigate("Settings")}>
           <Image
             source={require("../assets/Icons/settings.png")}
             style={styles.icon}
