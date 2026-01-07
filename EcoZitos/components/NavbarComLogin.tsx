@@ -2,32 +2,65 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
-
+import { AuthContext } from "../context/AuthContext";
 
 export default function NavbarComLogin() {
-    const navigation = useNavigation<any>();
-  
+  const navigation = useNavigation<any>();
+  const { user } = React.useContext(AuthContext);
+
   return (
     <View style={styles.navbar}>
-      <TouchableOpacity style={styles.navItem} onPress={()=> navigation.navigate("Search")}>
-        <Image source={require("../assets/Icons/Search.png")} style={styles.icon} />
+
+      {/* Search */}
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={() => navigation.navigate("Search")}
+      >
+        <Image
+          source={require("../assets/Icons/Search.png")}
+          style={styles.icon}
+        />
         <Text style={styles.navText}>Search</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("HomeComLogin")}>
-        <Image source={require("../assets/Icons/Home.png")} style={styles.icon} />
+      {/* Home */}
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={() => navigation.navigate("HomeComLogin")}
+      >
+        <Image
+          source={require("../assets/Icons/Home.png")}
+          style={styles.icon}
+        />
         <Text style={styles.navText}>Home</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navItem} onPress={()=> navigation.navigate("Profile")}>
-        <Image source={require("../assets/Icons/Profile.png")} style={styles.icon} />
-        <Text style={styles.navText}>Profile</Text>
+      {/* Profile */}
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={() => navigation.navigate("Profile")}
+      >
+        <Image
+          source={require("../assets/Icons/Profile.png")}
+          style={styles.icon}
+        />
+        <Text style={styles.navText}>
+          {user ? user.username : "Profile"}
+        </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Notifications")}>
-        <Image source={require("../assets/Icons/Bell.png")} style={styles.icon} />
+      {/* Notifications */}
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={() => navigation.navigate("Notifications")}
+      >
+        <Image
+          source={require("../assets/Icons/Bell.png")}
+          style={styles.icon}
+        />
         <Text style={styles.navText}>Notifications</Text>
       </TouchableOpacity>
+
     </View>
   );
 }

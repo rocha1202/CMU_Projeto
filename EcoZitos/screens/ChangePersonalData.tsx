@@ -7,14 +7,35 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import Navbar from "../components/Navbar";
+import { AuthContext } from "../context/AuthContext";
 
-export default function ChangePassword() {
+export default function ChangePersonalData() {
   const navigation = useNavigation<any>();
+  const { user, signUp } = React.useContext(AuthContext);
+
+  // ESTADOS COM VALORES ATUAIS
+  const [email, setEmail] = React.useState(user?.email || "");
+  const [username, setUsername] = React.useState(user?.username || "");
+
+  function handleSave() {
+    if (!email || !username) {
+      Alert.alert("Erro", "Preencha todos os campos");
+      return;
+    }
+
+    // Atualizar dados no mock (AuthContext)
+    const updatedUser = { ...user, email, username };
+    signUp(updatedUser);
+
+    Alert.alert("Sucesso", "Dados atualizados com sucesso!");
+    navigation.goBack();
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -32,28 +53,32 @@ export default function ChangePassword() {
 
       {/* SCROLL CONTENT */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* INPUT */}
+        {/* EMAIL */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Email</Text>
           <TextInput
-            placeholder="ecozitos@email.com"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="email@example.com"
             placeholderTextColor="#7FAEAA"
-            secureTextEntry
             style={styles.input}
           />
         </View>
+
+        {/* USERNAME */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Username</Text>
           <TextInput
+            value={username}
+            onChangeText={setUsername}
             placeholder="Ecozitos"
             placeholderTextColor="#7FAEAA"
-            secureTextEntry
             style={styles.input}
           />
         </View>
 
         {/* SAVE BUTTON */}
-        <TouchableOpacity style={styles.saveButton}>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveText}>Save</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -95,7 +120,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 160, // espaço para navbar + botões
+    paddingBottom: 160,
   },
 
   /* INPUT GROUP */
@@ -126,19 +151,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   saveText: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
-  /* LOGOUT BUTTON */
-  logoutButton: {
-    backgroundColor: colors.primaryDark,
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  logoutText: {
     color: colors.white,
     fontSize: 18,
     fontWeight: "bold",

@@ -14,6 +14,7 @@ import { colors } from "../theme/colors";
 import Navbar from "../components/Navbar";
 import challengesData from "../api/challenges.json";
 import { useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../context/AuthContext";
 
 const { width } = Dimensions.get("window");
 
@@ -23,9 +24,12 @@ const carouselImages = [
   { id: "3", image: require("../assets/carousel3.png") },
 ];
 
-export default function HomeScreen() {
+export default function HomeSemLogin() {
   const challenges = challengesData;
   const navigation = useNavigation<any>();
+
+  // 🔥 Obter logout do contexto (mesmo sem login, mantém consistência)
+  const { logout } = React.useContext(AuthContext);
 
   const getImage = (path: string) => {
     if (path.includes("challenge1.png")) {
@@ -51,17 +55,23 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+      {/* 🔥 Botão de saída (vai para Login e limpa sessão) */}
+      <TouchableOpacity
+        onPress={() => {
+          logout(); // limpa qualquer sessão mock
+          navigation.navigate("Login");
+        }}
+      >
         <Image
           source={require("../assets/Icons/Exit@.png")}
           style={styles.icon}
         />
       </TouchableOpacity>
+
       <Text style={styles.title}>EcoZitos</Text>
+
       {/* Scrollable Content */}
       <ScrollView style={styles.container}>
-        {/* Latest Articles */}
-
         <Text style={styles.subtitle}>Latest Articles</Text>
 
         {/* Carousel */}
@@ -224,7 +234,8 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-    icon: {
+
+  icon: {
     width: 30,
     height: 30,
     marginLeft: 16,

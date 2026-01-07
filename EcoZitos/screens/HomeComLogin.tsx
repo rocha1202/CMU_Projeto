@@ -14,6 +14,7 @@ import { colors } from "../theme/colors";
 import Navbar from "../components/Navbar";
 import challengesData from "../api/challenges.json";
 import { useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../context/AuthContext";
 
 const { width } = Dimensions.get("window");
 
@@ -23,9 +24,12 @@ const carouselImages = [
   { id: "3", image: require("../assets/carousel3.png") },
 ];
 
-export default function HomeScreen() {
+export default function HomeComLogin() {
   const challenges = challengesData;
   const navigation = useNavigation<any>();
+
+  // 🔥 Obter user + logout do contexto
+  const { user, logout } = React.useContext(AuthContext);
 
   const getImage = (path: string) => {
     if (path.includes("challenge1.png")) {
@@ -56,26 +60,58 @@ export default function HomeScreen() {
         <TouchableOpacity style={[styles.navButton, styles.activeButton]}>
           <Image
             source={require("../assets/Icons/Home.png")}
-            style={[styles.navIcon, {tintColor: colors.white}]}
+            style={[styles.navIcon, { tintColor: colors.white }]}
           />
           <Text style={[styles.navText, styles.activeText]}>Home</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navButton}
-        onPress={() => navigation.navigate("MyActivity")}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate("MyActivity")}
+        >
           <Image
             source={require("../assets/Icons/Home.png")}
-            style={[styles.navIcon, {tintColor: colors.primary}]}
+            style={[styles.navIcon, { tintColor: colors.primary }]}
           />
-          
           <Text style={styles.navText}>My activity</Text>
         </TouchableOpacity>
       </View>
 
+      {/* 🔥 Nome do utilizador autenticado */}
+      {user && (
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 18,
+            fontWeight: "700",
+            color: colors.textPrimary,
+            marginBottom: 10,
+          }}
+        >
+          Welcome, {user.username} 👋
+        </Text>
+      )}
+
+      {/* 🔥 Botão de logout */}
+      <TouchableOpacity
+        onPress={() => {
+          logout();
+          navigation.navigate("Login");
+        }}
+        style={{
+          alignSelf: "center",
+          marginBottom: 10,
+          paddingVertical: 6,
+          paddingHorizontal: 16,
+          borderRadius: 20,
+          backgroundColor: colors.primary,
+        }}
+      >
+        <Text style={{ color: colors.white, fontWeight: "700" }}>Logout</Text>
+      </TouchableOpacity>
+
       {/* Scrollable Content */}
       <ScrollView style={styles.container}>
-        {/* Latest Articles */}
-
         <Text style={styles.subtitle}>Latest Articles</Text>
 
         {/* Carousel */}
@@ -201,41 +237,41 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   navButtons: {
-  flexDirection: "row",
-  justifyContent: "center",
-  gap: 12,
-  marginTop: 10,
-  marginBottom: 10,
-},
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 12,
+    marginTop: 10,
+    marginBottom: 10,
+  },
 
-navButton: {
-  flexDirection: "row",
-  alignItems: "center",
-  paddingVertical: 8,
-  paddingHorizontal: 16,
-  borderRadius: 20,
-  backgroundColor: colors.white,
-  borderWidth: 1,
-  borderColor: colors.primary,
-},
+  navButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
 
-activeButton: {
-  backgroundColor: colors.primary,
-},
+  activeButton: {
+    backgroundColor: colors.primary,
+  },
 
-navText: {
-  fontSize: 16,
-  fontWeight: "600",
-  marginLeft: 8,
-  color: colors.primary,
-},
+  navText: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 8,
+    color: colors.primary,
+  },
 
-activeText: {
-  color: colors.white,
-},
+  activeText: {
+    color: colors.white,
+  },
 
-navIcon: {
-  width: 20,
-  height: 20,
-},
+  navIcon: {
+    width: 20,
+    height: 20,
+  },
 });

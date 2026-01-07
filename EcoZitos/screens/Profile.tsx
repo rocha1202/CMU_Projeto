@@ -1,20 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   Image,
+  TouchableOpacity,
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import Navbar from "../components/Navbar";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Profile() {
   const navigation = useNavigation<any>();
   const [selected, setSelected] = useState("badges");
+
+  // 🔥 Dados reais do utilizador autenticado
+  const { user } = useContext(AuthContext);
 
   const menuItems = [
     { key: "badges", label: "Badges" },
@@ -56,13 +60,14 @@ export default function Profile() {
       image: require("../assets/Challenges/challenge6.png"),
     },
   ];
+
   const reviews = [
     {
       id: 1,
       challengeTitle: "Recycling Hero Challenge",
       comment: "Aprendi imenso! Muito divertido e útil.",
       avatar: require("../assets/Icons/Avatar.png"),
-      name: "ElissRich",
+      name: user?.username || "User",
       stars: 4,
       hearts: 12,
     },
@@ -71,7 +76,7 @@ export default function Profile() {
       challengeTitle: "Save water, Save the Planet",
       comment: "Gostei bastante, fez-me pensar no desperdício.",
       avatar: require("../assets/Icons/Avatar.png"),
-      name: "ElissRich",
+      name: user?.username || "User",
       stars: 5,
       hearts: 20,
     },
@@ -80,11 +85,12 @@ export default function Profile() {
       challengeTitle: "Switch Off & Shine",
       comment: "Muito simples mas eficaz!",
       avatar: require("../assets/Icons/Avatar.png"),
-      name: "ElissRich",
+      name: user?.username || "User",
       stars: 3,
       hearts: 8,
     },
   ];
+
   const photos = [
     { id: 1, image: require("../assets/Photos/photo1.png") },
     { id: 2, image: require("../assets/Photos/photo2.png") },
@@ -93,6 +99,7 @@ export default function Profile() {
     { id: 5, image: require("../assets/Photos/photo5.png") },
     { id: 6, image: require("../assets/Photos/photo6.png") },
   ];
+
   return (
     <SafeAreaView style={styles.safe}>
       {/* HEADER */}
@@ -108,12 +115,21 @@ export default function Profile() {
         />
 
         <View style={styles.infoColumn}>
-          <Text style={styles.name}>ElissRich</Text>
+          {/* 🔥 Nome real */}
+          <Text style={styles.name}>{user?.username || "User"}</Text>
+
+          {/* 🔥 Email real */}
+          <Text style={styles.subInfo}>{user?.email || "email@example.com"}</Text>
+
+          {/* Mock data */}
           <Text style={styles.subInfo}>10 Following</Text>
-          <Text style={styles.subInfo}>10 Flowers</Text>
+          <Text style={styles.subInfo}>10 Followers</Text>
         </View>
 
-        <TouchableOpacity style={styles.settingsButton}  onPress={() => navigation.navigate("Settings")}>
+        <TouchableOpacity
+          style={styles.settingsButton}
+          onPress={() => navigation.navigate("Settings")}
+        >
           <Image
             source={require("../assets/Icons/settings.png")}
             style={styles.icon}
@@ -182,7 +198,6 @@ export default function Profile() {
         {/* CHALLENGES */}
         {selected === "challenges" && (
           <View style={{ width: "100%" }}>
-            {/* IN PROGRESS */}
             <View style={styles.challengeTopBar}>
               <Text style={styles.challengeTopBarText}>In progress</Text>
               <Image
@@ -200,7 +215,6 @@ export default function Profile() {
               ))}
             </View>
 
-            {/* FAVOURITES */}
             <View style={styles.challengeTopBar}>
               <Text style={styles.challengeTopBarText}>Favourites</Text>
               <Image
@@ -219,25 +233,22 @@ export default function Profile() {
             </View>
           </View>
         )}
+
         {/* REVIEWS */}
         {selected === "reviews" && (
           <View style={{ width: "100%", paddingHorizontal: 20 }}>
             {reviews.map((item) => (
               <View key={item.id} style={styles.reviewCard}>
-                {/* Linha 1 — Título + Estrelas */}
                 <View style={styles.reviewRow1}>
                   <Text style={styles.reviewTitle}>{item.challengeTitle}</Text>
-
                   <Image
                     source={require("../assets/Icons/Stars.png")}
                     style={styles.starsRow}
                   />
                 </View>
 
-                {/* Linha 2 — Comentário */}
                 <Text style={styles.reviewComment}>{item.comment}</Text>
 
-                {/* Linha 3 — Avatar + Nome / Coração + nº */}
                 <View style={styles.reviewRow3}>
                   <View style={styles.reviewUser}>
                     <Image source={item.avatar} style={styles.reviewAvatar} />
@@ -256,6 +267,7 @@ export default function Profile() {
             ))}
           </View>
         )}
+
         {/* PHOTO LIBRARY */}
         {selected === "photos" && (
           <View style={styles.photoGrid}>
@@ -266,18 +278,6 @@ export default function Profile() {
             ))}
           </View>
         )}
-        {/* OTHER TABS */}
-        {selected !== "badges" &&
-          selected !== "trophies" &&
-          selected !== "challenges" &&
-          selected !== "reviews" && 
-          selected !== "photos" && (
-            <View style={styles.dynamicArea}>
-              <Text style={styles.dynamicText}>
-                {selected.toUpperCase()} CONTENT HERE
-              </Text>
-            </View>
-          )}
       </ScrollView>
 
       <Navbar logged={true} />
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontWeight: "600",
   },
-  /* REVIEW CARD */
+
   reviewCard: {
     width: "100%",
     backgroundColor: colors.white,
@@ -462,7 +462,6 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 
-  /* Linha 1 */
   reviewRow1: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -479,14 +478,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
 
-  /* Linha 2 */
   reviewComment: {
     fontSize: 14,
     color: colors.textPrimary,
     marginBottom: 12,
   },
 
-  /* Linha 3 */
   reviewRow3: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -523,33 +520,33 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: colors.primary,
   },
-  /* PHOTO LIBRARY */
-photoGrid: {
-  width: "100%",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  justifyContent: "space-between",
-  paddingHorizontal: 20,
-  rowGap: 20,
-  marginTop: 10,
-},
 
-photoItem: {
-  width: "30%",   // 3 colunas perfeitas
-  aspectRatio: 1, // mantém quadrado
-  borderRadius: 10,
-  overflow: "hidden",
-  backgroundColor: colors.white,
-  shadowColor: colors.border,
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.3,
-  shadowRadius: 8,
-  elevation: 4,
-},
+  photoGrid: {
+    width: "100%",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    rowGap: 20,
+    marginTop: 10,
+  },
 
-photoImage: {
-  width: "100%",
-  height: "100%",
-  resizeMode: "cover",
-},
+  photoItem: {
+    width: "30%",
+    aspectRatio: 1,
+    borderRadius: 10,
+    overflow: "hidden",
+    backgroundColor: colors.white,
+    shadowColor: colors.border,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+
+  photoImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
 });

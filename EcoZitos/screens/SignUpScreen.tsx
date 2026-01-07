@@ -6,14 +6,35 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
-
+import { AuthContext } from "../context/AuthContext";
 
 export default function SignUpScreen() {
   const navigation = useNavigation<any>();
+  const { signUp } = React.useContext(AuthContext);
+
+  // ESTADOS (adicionados)
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [username, setUsername] = React.useState("");
+  const [type, setType] = React.useState("");
+
+  function handleSignUp() {
+    if (!email || !password || !username || !type) {
+      Alert.alert("Erro", "Preencha todos os campos");
+      return;
+    }
+
+    // Guardar utilizador em memória (mock)
+    signUp({ email, password, username, type });
+
+    Alert.alert("Conta criada!", "Agora pode iniciar sessão.");
+    navigation.navigate("Login");
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -23,46 +44,56 @@ export default function SignUpScreen() {
       >
         <Text style={styles.title}>EcoZitos</Text>
         <Text style={styles.subtitle}>Signup</Text>
+
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Email</Text>
           <TextInput
+            value={email}
+            onChangeText={setEmail}
             placeholder="ecozito@gmail.com"
             placeholderTextColor="#7FAEAA"
             style={styles.input}
           />
         </View>
+
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Password</Text>
           <TextInput
+            value={password}
+            onChangeText={setPassword}
             placeholder="••••••••"
             placeholderTextColor="#7FAEAA"
             secureTextEntry
             style={styles.input}
           />
         </View>
+
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Username</Text>
           <TextInput
+            value={username}
+            onChangeText={setUsername}
             placeholder="EcoZito"
             placeholderTextColor="#7FAEAA"
-            secureTextEntry
             style={styles.input}
           />
         </View>
+
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Type</Text>
           <TextInput
+            value={type}
+            onChangeText={setType}
             placeholder="Student/Teacher"
             placeholderTextColor="#7FAEAA"
-            secureTextEntry
             style={styles.input}
           />
         </View>
-           <TouchableOpacity style={styles.button}>
-             <Text style={styles.buttonText} onPress={() => navigation.navigate("HomeComLogin")}>
-               Sign In
-             </Text>
-           </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Sign In</Text>
+        </TouchableOpacity>
+
         <Text style={styles.footerText}>
           Do you already have an account?{" "}
           <Text
@@ -72,7 +103,11 @@ export default function SignUpScreen() {
             Sign in
           </Text>
         </Text>
-        <Text style={styles.skip} onPress={() => navigation.navigate("HomeSemLogin")}>
+
+        <Text
+          style={styles.skip}
+          onPress={() => navigation.navigate("HomeSemLogin")}
+        >
           Skip
         </Text>
       </LinearGradient>
@@ -133,7 +168,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textDecorationLine: "underline",
   },
-
   skip: {
     marginTop: 30,
     textDecorationLine: "underline",

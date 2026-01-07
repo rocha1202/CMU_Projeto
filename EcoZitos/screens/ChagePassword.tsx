@@ -7,14 +7,46 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import Navbar from "../components/Navbar";
+import { AuthContext } from "../context/AuthContext";
 
 export default function ChangePassword() {
   const navigation = useNavigation<any>();
+  const { user, signUp } = React.useContext(AuthContext);
+
+  // ESTADOS
+  const [oldPass, setOldPass] = React.useState("");
+  const [newPass, setNewPass] = React.useState("");
+  const [confirmPass, setConfirmPass] = React.useState("");
+
+  function handleSave() {
+    if (!oldPass || !newPass || !confirmPass) {
+      Alert.alert("Erro", "Preencha todos os campos");
+      return;
+    }
+
+    if (oldPass !== user.password) {
+      Alert.alert("Erro", "A password antiga está incorreta");
+      return;
+    }
+
+    if (newPass !== confirmPass) {
+      Alert.alert("Erro", "A nova password não coincide");
+      return;
+    }
+
+    // Atualizar password no mock (AuthContext)
+    const updatedUser = { ...user, password: newPass };
+    signUp(updatedUser);
+
+    Alert.alert("Sucesso", "Password alterada com sucesso!");
+    navigation.goBack();
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -32,28 +64,38 @@ export default function ChangePassword() {
 
       {/* SCROLL CONTENT */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* INPUT */}
+        {/* INPUT OLD */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Old Password</Text>
           <TextInput
+            value={oldPass}
+            onChangeText={setOldPass}
             placeholder="••••••••"
             placeholderTextColor="#7FAEAA"
             secureTextEntry
             style={styles.input}
           />
         </View>
-                <View style={styles.inputGroup}>
+
+        {/* INPUT NEW */}
+        <View style={styles.inputGroup}>
           <Text style={styles.label}>New Password</Text>
           <TextInput
+            value={newPass}
+            onChangeText={setNewPass}
             placeholder="••••••••"
             placeholderTextColor="#7FAEAA"
             secureTextEntry
             style={styles.input}
           />
         </View>
-                <View style={styles.inputGroup}>
+
+        {/* INPUT CONFIRM */}
+        <View style={styles.inputGroup}>
           <Text style={styles.label}>New Password Confirmation</Text>
           <TextInput
+            value={confirmPass}
+            onChangeText={setConfirmPass}
             placeholder="••••••••"
             placeholderTextColor="#7FAEAA"
             secureTextEntry
@@ -62,11 +104,9 @@ export default function ChangePassword() {
         </View>
 
         {/* SAVE BUTTON */}
-        <TouchableOpacity style={styles.saveButton}>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveText}>Save</Text>
         </TouchableOpacity>
-
-
       </ScrollView>
 
       {/* FIXED NAVBAR */}
@@ -106,7 +146,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 160, // espaço para navbar + botões
+    paddingBottom: 160,
   },
 
   /* INPUT GROUP */
@@ -137,19 +177,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   saveText: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
-  /* LOGOUT BUTTON */
-  logoutButton: {
-    backgroundColor: colors.primaryDark,
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  logoutText: {
     color: colors.white,
     fontSize: 18,
     fontWeight: "bold",
