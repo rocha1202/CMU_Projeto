@@ -132,6 +132,17 @@ export default function Profile() {
         return require("../assets/Challenges/challenge1.png");
     }
   };
+  const usersData = [
+    { id: 1, name: "Reyna Martines", icon: "single" },
+    { id: 2, name: "Skye Antas", icon: "group" },
+    { id: 3, name: "Breach Marc", icon: "group" },
+    { id: 4, name: "Raze Autum", icon: "group" },
+    { id: 5, name: "Tejo Veto", icon: "single" },
+    { id: 6, name: "Sage Heal", icon: "single" },
+    { id: 7, name: "Mark Brim", icon: "group" },
+    { id: 8, name: "Dart Brom", icon: "single" },
+    { id: 9, name: "Yany Blue", icon: "group" },
+  ];
   const Top3 = ({ data }: { data: any[] }) => (
     <View style={styles.top3Container}>
       <View style={styles.podiumRow}>
@@ -221,10 +232,7 @@ export default function Profile() {
                   item.id % 2 === 0 ? styles.cardReverse : null,
                 ]}
               >
-                <Image
-                  source={getImage(item.id)}
-                  style={styles.cardImage}
-                />
+                <Image source={getImage(item.id)} style={styles.cardImage} />
                 <View style={styles.cardContent}>
                   <Text style={styles.cardTitle}>{item.title}</Text>
                   <Text style={styles.cardText}>{item.text}</Text>
@@ -278,8 +286,24 @@ export default function Profile() {
 
         {/* USERS */}
         {selected === "users" && (
-          <View style={styles.dynamicArea}>
-            <Text style={styles.dynamicText}>USERS CONTENT HERE</Text>
+          <View style={styles.usersList}>
+            {usersData.map((user) => (
+              <View key={user.id} style={styles.userItem}>
+                <Image
+                  source={require("../assets/Icons/Avatar.png")}
+                  style={styles.userAvatar}
+                />
+                <Text style={styles.userName}>{user.name}</Text>
+                <Image
+                  source={
+                    user.icon === "group"
+                      ? require("../assets/Icons/addUser.png")
+                      : require("../assets/Icons/FlowUser.png")
+                  }
+                  style={styles.userIcon}
+                />
+              </View>
+            ))}
           </View>
         )}
       </ScrollView>
@@ -293,7 +317,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.white },
 
-  inputGroup: { paddingHorizontal: 20, marginBottom: 20 },
+  inputGroup: { paddingHorizontal: 20, marginBottom: 2, marginTop: 10 },
   input: {
     backgroundColor: colors.white,
     borderRadius: 10,
@@ -362,13 +386,19 @@ const styles = StyleSheet.create({
   fullListPoints: { fontWeight: "700", color: colors.primary },
 
   /* CHALLENGES */
+
   card: {
     backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
+    paddingHorizontal: 20,
     marginBottom: 20,
     flexDirection: "row",
     elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   cardReverse: { flexDirection: "row-reverse" },
   cardImage: { width: 100, height: 100, borderRadius: 12 },
@@ -402,5 +432,43 @@ const styles = StyleSheet.create({
   thirdPlace: {
     marginBottom: 10,
     backgroundColor: "#C8E4D5",
+  },
+  usersList: {
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    gap: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+
+  userItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.white,
+    padding: 12,
+    borderRadius: 10,
+    elevation: 3,
+  },
+
+  userAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+
+  userName: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.primaryDark,
+  },
+
+  userIcon: {
+    width: 24,
+    height: 24,
+    tintColor: colors.primaryDark,
   },
 });

@@ -14,6 +14,7 @@ import Settings from "./screens/Settings";
 import ChangePassword from "./screens/ChagePassword";
 import ChangePersonalData from "./screens/ChangePersonalData";
 import Search from "./screens/Search";
+import ProfileOtherUsers from "./screens/ProfileOtherUsers";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -24,8 +25,8 @@ export default function App() {
     <AuthProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-
           {/* ROTAS LIVRES */}
+
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="HomeSemLogin" component={HomeSemLogin} />
@@ -96,7 +97,10 @@ export default function App() {
 
           {/* Search pode ser livre ou protegida — deixei livre como no teu fluxo */}
           <Stack.Screen name="Search" component={Search} />
-
+          <Stack.Screen
+            name="ProfileOtherUsers"
+            component={ProfileOtherUsers}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
