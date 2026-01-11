@@ -77,7 +77,7 @@ export default function HomeComLogin() {
         </TouchableOpacity>
       </View>
 
-      {/* 🔥 Nome do utilizador autenticado */}
+      {/* Nome do utilizador autenticado */}
       {user && (
         <Text
           style={{
@@ -88,27 +88,9 @@ export default function HomeComLogin() {
             marginBottom: 10,
           }}
         >
-          Welcome, {user.username} 👋
+          Welcome, {user.username} 
         </Text>
       )}
-
-      {/* 🔥 Botão de logout */}
-      <TouchableOpacity
-        onPress={() => {
-          logout();
-          navigation.navigate("Login");
-        }}
-        style={{
-          alignSelf: "center",
-          marginBottom: 10,
-          paddingVertical: 6,
-          paddingHorizontal: 16,
-          borderRadius: 20,
-          backgroundColor: colors.primary,
-        }}
-      >
-        <Text style={{ color: colors.white, fontWeight: "700" }}>Logout</Text>
-      </TouchableOpacity>
 
       {/* Scrollable Content */}
       <ScrollView style={styles.container}>

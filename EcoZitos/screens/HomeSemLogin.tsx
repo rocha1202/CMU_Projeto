@@ -55,7 +55,7 @@ export default function HomeSemLogin() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {/* 🔥 Botão de saída (vai para Login e limpa sessão) */}
+      {/* Botão de saída (vai para Login e limpa sessão) */}
       <TouchableOpacity
         onPress={() => {
           logout(); // limpa qualquer sessão mock
