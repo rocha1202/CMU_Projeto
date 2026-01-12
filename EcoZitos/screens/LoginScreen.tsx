@@ -1,31 +1,65 @@
-import * as React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { colors } from "../theme/colors";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useContext, useEffect } from "react";
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
 import { AuthContext } from "../context/AuthContext";
 
-export default function LoginScreen() {
-  const navigation = useNavigation<any>();
-  const { signIn } = React.useContext(AuthContext);
+// -----------------------------
+// VALIDADOR DE EMAIL
+// -----------------------------
+function isValidEmail(email: string) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
 
-  // ESTADOS (adicionados)
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+export default function LoginScreen({ navigation }: any) {
+  const { signIn } = useContext(AuthContext);
 
-  function handleLogin() {
-    const result = signIn(email, password);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    if (result?.error) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  // -----------------------------
+  // ESTADOS DE ERRO VISUAL
+  // -----------------------------
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  // -----------------------------
+  // VALIDAÇÃO EM TEMPO REAL
+  // -----------------------------
+  useEffect(() => {
+    if (email.length === 0) return setEmailError("");
+    if (!isValidEmail(email)) return setEmailError("Email inválido");
+    setEmailError("");
+  }, [email]);
+
+  useEffect(() => {
+    if (password.length === 0) return setPasswordError("");
+    setPasswordError("");
+  }, [password]);
+
+  // -----------------------------
+  // SUBMISSÃO DO LOGIN
+  // -----------------------------
+  async function handleLogin() {
+    if (emailError || passwordError) {
+      Alert.alert("Erro", "Corrija os erros antes de continuar");
+      return;
+    }
+
+    if (!email || !password) {
+      Alert.alert("Erro", "Preencha todos os campos");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      Alert.alert("Erro", "Insira um email válido");
+      return;
+    }
+
+    const result = await signIn(email, password);
+
+    if (result.error) {
       Alert.alert("Erro", result.error);
       return;
     }
@@ -34,132 +68,85 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <LinearGradient
-        colors={[colors.backgroundTop, colors.backgroundBottom]}
-        style={styles.container}
-      >
-        <Image
-          source={require("../assets/ecozitos.png")}
-          style={styles.image}
-          resizeMode="contain"
+    <View style={{ flex: 1, padding: 20 }}>
+      {/* EMAIL */}
+      <Text>Email</Text>
+      <TextInput
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        style={[
+          styles.input,
+          emailError ? styles.inputError : email.length > 0 ? styles.inputSuccess : null,
+        ]}
+      />
+      {emailError !== "" && <Text style={styles.errorText}>{emailError}</Text>}
+
+      {/* PASSWORD */}
+      <Text>Password</Text>
+      <View style={{ position: "relative" }}>
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+          autoCapitalize="none"
+          style={[
+            styles.input,
+            passwordError ? styles.inputError : password.length > 0 ? styles.inputSuccess : null,
+          ]}
         />
 
-        <Text style={styles.title}>EcoZitos</Text>
-        <Text style={styles.subtitle}>Sign in</Text>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            placeholder="ecozito@gmail.com"
-            placeholderTextColor="#7FAEAA"
-            style={styles.input}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="••••••••"
-            placeholderTextColor="#7FAEAA"
-            secureTextEntry
-            style={styles.input}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.footerText}>
-          Are you new?{" "}
-          <Text
-            style={styles.link}
-            onPress={() => navigation.navigate("SignUp")}
-          >
-            Create an account
-          </Text>
-        </Text>
-
-        <Text
-          style={styles.skip}
-          onPress={() => navigation.navigate("HomeSemLogin")}
+        <TouchableOpacity
+          onPress={() => setShowPassword(!showPassword)}
+          style={{ position: "absolute", right: 10, top: 12 }}
         >
-          Skip
+          <Text>{showPassword ? "Ocultar" : "Mostrar"}</Text>
+        </TouchableOpacity>
+      </View>
+      {passwordError !== "" && <Text style={styles.errorText}>{passwordError}</Text>}
+
+      {/* BOTÃO LOGIN */}
+      <TouchableOpacity
+        onPress={handleLogin}
+        style={{
+          backgroundColor: "#4CAF50",
+          padding: 15,
+          alignItems: "center",
+          borderRadius: 5,
+        }}
+      >
+        <Text style={{ color: "white", fontWeight: "bold" }}>Entrar</Text>
+      </TouchableOpacity>
+
+      {/* LINK PARA CRIAR CONTA */}
+      <TouchableOpacity
+        onPress={() => navigation.navigate("SignUp")}
+        style={{ marginTop: 20 }}
+      >
+        <Text style={{ color: "#4CAF50", textAlign: "center" }}>
+          Criar nova conta
         </Text>
-      </LinearGradient>
-    </SafeAreaView>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    paddingHorizontal: 24,
-  },
-  image: {
-    width: 200,
-    height: 200,
-    marginTop: 40,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: colors.textPrimary,
-    marginTop: 16,
-  },
-  subtitle: {
-    fontSize: 22,
-    fontWeight: "600",
-    color: colors.textPrimary,
-    marginBottom: 32,
-  },
-  inputGroup: {
-    width: "100%",
-    marginBottom: 16,
-  },
-  label: {
-    marginBottom: 6,
-    color: colors.textPrimary,
-    fontWeight: "600",
-  },
   input: {
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
     borderWidth: 1,
-    borderColor: colors.border,
+    padding: 10,
+    marginBottom: 5,
   },
-  button: {
-    width: "100%",
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 16,
+  inputError: {
+    borderColor: "red",
   },
-  buttonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: "700",
+  inputSuccess: {
+    borderColor: "green",
   },
-  footerText: {
-    marginTop: 20,
-    color: colors.textPrimary,
-  },
-  link: {
-    fontWeight: "700",
-    textDecorationLine: "underline",
-  },
-  skip: {
-    marginTop: 30,
-    color: colors.textPrimary,
-    textDecorationLine: "underline",
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 10,
   },
 });

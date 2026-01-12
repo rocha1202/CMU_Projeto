@@ -33,7 +33,7 @@ export default function HomeComLogin() {
 
   const getImage = (path: string) => {
     if (path.includes("challenge1.png")) {
-      return require("../assets//Challenges/challenge1.png");
+      return require("../assets/Challenges/challenge1.png");
     }
     if (path.includes("challenge2.png")) {
       return require("../assets/Challenges/challenge2.png");
@@ -88,7 +88,7 @@ export default function HomeComLogin() {
             marginBottom: 10,
           }}
         >
-          Welcome, {user.username} 
+          Welcome, {user.username}
         </Text>
       )}
 
@@ -137,37 +137,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: colors.white,
   },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  topBarButton: {
-    fontSize: 16,
-    color: colors.primary,
-    fontWeight: "600",
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "800",
-    color: colors.textPrimary,
-    textAlign: "center",
-  },
   subtitle: {
     textAlign: "center",
     marginBottom: 20,
     fontSize: 20,
     color: colors.textPrimary,
     fontWeight: "600",
-  },
-  articlesImage: {
-    width: width - 32,
-    height: 180,
-    borderRadius: 16,
-    marginBottom: 20,
   },
   carouselImage: {
     width: width - 32,
@@ -225,7 +200,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-
   navButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -236,22 +210,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.primary,
   },
-
   activeButton: {
     backgroundColor: colors.primary,
   },
-
   navText: {
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 8,
     color: colors.primary,
   },
-
   activeText: {
     color: colors.white,
   },
-
   navIcon: {
     width: 20,
     height: 20,
