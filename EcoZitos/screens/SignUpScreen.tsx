@@ -107,12 +107,7 @@ export default function SignUpScreen() {
           </Text>
         </Text>
 
-        <Text
-          style={styles.skip}
-          onPress={() => navigation.navigate("HomeSemLogin")}
-        >
-          Skip
-        </Text>
+        <Text style={styles.skip}>Skip</Text>
       </LinearGradient>
     </SafeAreaView>
   );

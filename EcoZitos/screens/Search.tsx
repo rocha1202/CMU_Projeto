@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -7,172 +8,166 @@ import {
   Image,
   ScrollView,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
-import challengesData from "../api/challenges.json";
 import Navbar from "../components/Navbar";
 
 export default function Profile() {
-  const challenges = challengesData;
   const [selected, setSelected] = useState("challenges");
   const [search, setSearch] = useState("");
+  const { user } = useContext(AuthContext)!;
 
+  const [friends, setFriends] = useState<string[]>(user?.friends || []);
+
+  const toggleFollow = async (targetId: string) => {
+    const isFollowing = friends.includes(targetId);
+
+    const url = isFollowing
+      ? `http://10.0.2.2:5000/users/${targetId}/unfollow`
+      : `http://10.0.2.2:5000/users/${targetId}/follow`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user._id }),
+    });
+
+    const data = await response.json();
+    setFriends(data.friends);
+  };
+
+  // USERS (para ranks)
+  const [users, setUsers] = useState<any[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+
+  // RANK CATEGORY
   const [rankCategory, setRankCategory] = useState<
     "teams" | "classroom" | "app"
   >("teams");
 
-  const menuItems = [
-    { key: "challenges", label: "Challenges" },
-    { key: "ranks", label: "Ranks" },
-    { key: "users", label: "Users" },
-  ];
+  // CHALLENGES
+  const [challenges, setChallenges] = useState<any[]>([]);
+  const [loadingChallenges, setLoadingChallenges] = useState(true);
+
+  // Buscar challenges ao backend
+  useEffect(() => {
+    async function fetchChallenges() {
+      try {
+        const response = await fetch("http://10.0.2.2:5000/challenges");
+        const data = await response.json();
+        setChallenges(data);
+      } catch (error) {
+        console.error("Erro ao buscar challenges:", error);
+      } finally {
+        setLoadingChallenges(false);
+      }
+    }
+    fetchChallenges();
+  }, []);
+
+  // Buscar users ao backend
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const response = await fetch("http://10.0.2.2:5000/users");
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Erro ao buscar utilizadores:", error);
+      } finally {
+        setLoadingUsers(false);
+      }
+    }
+
+    fetchUsers();
+  }, []);
+  const onlyStudents = users.filter((u) => u.type === "Student");
+  // Separar users por categoria
+  const teams = users
+    .filter((u) => u.type === "Team")
+    .sort((a, b) => b.points - a.points);
+
+  const classroom = users
+    .filter((u) => u.type === "Teacher")
+    .sort((a, b) => b.points - a.points);
+
+  const appUsers = users
+    .filter((u) => u.type === "Student")
+    .sort((a, b) => b.points - a.points);
 
   const ranksData = {
-    teams: [
-      {
-        id: 1,
-        name: "Eco Guardians",
-        points: 980,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 2,
-        name: "Green Explorers",
-        points: 920,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 3,
-        name: "Plant Protectors",
-        points: 880,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 4,
-        name: "Nature Ninjas",
-        points: 820,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 5,
-        name: "Climate Heroes",
-        points: 790,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-    ],
-    classroom: [
-      {
-        id: 1,
-        name: "Class B",
-        points: 1200,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 2,
-        name: "Class A",
-        points: 1100,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 3,
-        name: "Class Y",
-        points: 1050,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 4,
-        name: "Class T",
-        points: 980,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-    ],
-    app: [
-      {
-        id: 1,
-        name: "ElissRich",
-        points: 1500,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 2,
-        name: "Mike Kwas",
-        points: 1400,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 3,
-        name: "Mert Mordd",
-        points: 1300,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-      {
-        id: 4,
-        name: "Ricky Morthy",
-        points: 1200,
-        avatar: require("../assets/Icons/Avatar.png"),
-      },
-    ],
+    teams,
+    classroom,
+    app: appUsers,
   };
-  const getImage = (id: number) => {
-    switch (id) {
-      case 1:
-        return require("../assets/Challenges/challenge1.png");
-      case 2:
-        return require("../assets/Challenges/challenge2.png");
-      case 3:
-        return require("../assets/Challenges/challenge3.png");
-      case 4:
-        return require("../assets/Challenges/challenge4.png");
-      case 5:
-        return require("../assets/Challenges/challenge5.png");
-      case 6:
-        return require("../assets/Challenges/challenge6.png");
-      default:
-        return require("../assets/Challenges/challenge1.png");
+
+  const getImage = (imagePath: string) => {
+    if (imagePath.includes("challenge1")) {
+      return require("../assets/Challenges/challenge1.png");
     }
+    if (imagePath.includes("challenge2")) {
+      return require("../assets/Challenges/challenge2.png");
+    }
+    if (imagePath.includes("challenge3")) {
+      return require("../assets/Challenges/challenge3.png");
+    }
+    if (imagePath.includes("challenge4")) {
+      return require("../assets/Challenges/challenge4.png");
+    }
+    if (imagePath.includes("challenge5")) {
+      return require("../assets/Challenges/challenge5.png");
+    }
+    if (imagePath.includes("challenge6")) {
+      return require("../assets/Challenges/challenge6.png");
+    }
+    return require("../assets/Challenges/challenge1.png");
   };
-  const usersData = [
-    { id: 1, name: "Reyna Martines", icon: "single" },
-    { id: 2, name: "Skye Antas", icon: "group" },
-    { id: 3, name: "Breach Marc", icon: "group" },
-    { id: 4, name: "Raze Autum", icon: "group" },
-    { id: 5, name: "Tejo Veto", icon: "single" },
-    { id: 6, name: "Sage Heal", icon: "single" },
-    { id: 7, name: "Mark Brim", icon: "group" },
-    { id: 8, name: "Dart Brom", icon: "single" },
-    { id: 9, name: "Yany Blue", icon: "group" },
-  ];
-  const Top3 = ({ data }: { data: any[] }) => (
-    <View style={styles.top3Container}>
-      <View style={styles.podiumRow}>
-        {/* 2nd */}
-        <View style={[styles.podiumCard, styles.secondPlace]}>
-          <Image source={data[1].avatar} style={styles.podiumAvatar} />
-          <Text style={styles.podiumName}>{data[1].name}</Text>
-          <Text style={styles.podiumPoints}>{data[1].points} pts</Text>
-        </View>
-
-        {/* 1st */}
-        <View style={[styles.podiumCard, styles.firstPlace]}>
-          <Image source={data[0].avatar} style={styles.podiumAvatar} />
-          <Text style={styles.podiumName}>{data[0].name}</Text>
-          <Text style={styles.podiumPoints}>{data[0].points} pts</Text>
-        </View>
-
-        {/* 3rd */}
-        <View style={[styles.podiumCard, styles.thirdPlace]}>
-          <Image source={data[2].avatar} style={styles.podiumAvatar} />
-          <Text style={styles.podiumName}>{data[2].name}</Text>
-          <Text style={styles.podiumPoints}>{data[2].points} pts</Text>
-        </View>
-      </View>
-    </View>
-  );
 
   const filteredChallenges = challenges.filter((item) =>
     item.title.toLowerCase().includes(search.toLowerCase())
   );
+
+  const Top3 = ({ data }: { data: any[] }) => {
+    if (!data || data.length < 3) return null;
+
+    return (
+      <View style={styles.top3Container}>
+        <View style={styles.podiumRow}>
+          {/* 2nd */}
+          <View style={[styles.podiumCard, styles.secondPlace]}>
+            <Image
+              source={require("../assets/Icons/Avatar.png")}
+              style={styles.podiumAvatar}
+            />
+            <Text style={styles.podiumName}>{data[1].username}</Text>
+            <Text style={styles.podiumPoints}>{data[1].points} pts</Text>
+          </View>
+
+          {/* 1st */}
+          <View style={[styles.podiumCard, styles.firstPlace]}>
+            <Image
+              source={require("../assets/Icons/Avatar.png")}
+              style={styles.podiumAvatar}
+            />
+            <Text style={styles.podiumName}>{data[0].username}</Text>
+            <Text style={styles.podiumPoints}>{data[0].points} pts</Text>
+          </View>
+
+          {/* 3rd */}
+          <View style={[styles.podiumCard, styles.thirdPlace]}>
+            <Image
+              source={require("../assets/Icons/Avatar.png")}
+              style={styles.podiumAvatar}
+            />
+            <Text style={styles.podiumName}>{data[2].username}</Text>
+            <Text style={styles.podiumPoints}>{data[2].points} pts</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -189,16 +184,16 @@ export default function Profile() {
 
       {/* TOP MENU */}
       <View style={styles.menuContainer}>
-        {menuItems.map((item) => {
-          const isSelected = selected === item.key;
+        {["challenges", "ranks", "users"].map((key) => {
+          const isSelected = selected === key;
           return (
             <TouchableOpacity
-              key={item.key}
+              key={key}
               style={[
                 styles.menuItem,
                 isSelected ? styles.menuItemSelected : styles.menuItemDefault,
               ]}
-              onPress={() => setSelected(item.key)}
+              onPress={() => setSelected(key)}
             >
               <Text
                 style={[
@@ -208,7 +203,7 @@ export default function Profile() {
                     : styles.menuLabelDefault,
                 ]}
               >
-                {item.label}
+                {key.charAt(0).toUpperCase() + key.slice(1)}
               </Text>
             </TouchableOpacity>
           );
@@ -219,20 +214,22 @@ export default function Profile() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* CHALLENGES */}
         {selected === "challenges" &&
-          (filteredChallenges.length === 0 ? (
+          (loadingChallenges ? (
+            <ActivityIndicator size="large" color={colors.primary} />
+          ) : filteredChallenges.length === 0 ? (
             <View style={styles.noResultsBox}>
               <Text style={styles.noResultsText}>No results found</Text>
             </View>
           ) : (
             filteredChallenges.map((item) => (
               <View
-                key={item.id}
+                key={item._id}
                 style={[
                   styles.card,
-                  item.id % 2 === 0 ? styles.cardReverse : null,
+                  item._id % 2 === 0 ? styles.cardReverse : null,
                 ]}
               >
-                <Image source={getImage(item.id)} style={styles.cardImage} />
+                <Image source={getImage(item.image)} style={styles.cardImage} />
                 <View style={styles.cardContent}>
                   <Text style={styles.cardTitle}>{item.title}</Text>
                   <Text style={styles.cardText}>{item.text}</Text>
@@ -268,40 +265,56 @@ export default function Profile() {
               ))}
             </View>
 
-            {/* TOP 3 */}
-            <Top3 data={ranksData[rankCategory]} />
+            {/* LOADING USERS */}
+            {loadingUsers ? (
+              <ActivityIndicator size="large" color={colors.primary} />
+            ) : (
+              <>
+                {/* TOP 3 */}
+                <Top3 data={ranksData[rankCategory]} />
 
-            {/* LISTA COMPLETA */}
-            <View style={styles.fullList}>
-              {ranksData[rankCategory].slice(3).map((item) => (
-                <View key={item.id} style={styles.fullListItem}>
-                  <Image source={item.avatar} style={styles.fullListAvatar} />
-                  <Text style={styles.fullListName}>{item.name}</Text>
-                  <Text style={styles.fullListPoints}>{item.points} pts</Text>
+                {/* LISTA COMPLETA */}
+                <View style={styles.fullList}>
+                  {ranksData[rankCategory].slice(3).map((item) => (
+                    <View key={item._id} style={styles.fullListItem}>
+                      <Image
+                        source={require("../assets/Icons/Avatar.png")}
+                        style={styles.fullListAvatar}
+                      />
+                      <Text style={styles.fullListName}>{item.username}</Text>
+                      <Text style={styles.fullListPoints}>
+                        {item.points} pts
+                      </Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </View>
+              </>
+            )}
           </>
         )}
 
         {/* USERS */}
         {selected === "users" && (
           <View style={styles.usersList}>
-            {usersData.map((user) => (
-              <View key={user.id} style={styles.userItem}>
+            {onlyStudents.map((user) => (
+              <View key={user._id} style={styles.userItem}>
                 <Image
                   source={require("../assets/Icons/Avatar.png")}
                   style={styles.userAvatar}
                 />
-                <Text style={styles.userName}>{user.name}</Text>
-                <Image
-                  source={
-                    user.icon === "group"
-                      ? require("../assets/Icons/addUser.png")
-                      : require("../assets/Icons/FlowUser.png")
-                  }
-                  style={styles.userIcon}
-                />
+
+                <Text style={styles.userName}>{user.username}</Text>
+
+                <TouchableOpacity onPress={() => toggleFollow(user._id)}>
+                  <Image
+                    source={
+                      friends.includes(user._id)
+                        ? require("../assets/Icons/FlowUser.png")
+                        : require("../assets/Icons/addUser.png")
+                    }
+                    style={styles.followIcon}
+                  />
+                </TouchableOpacity>
               </View>
             ))}
           </View>
@@ -313,11 +326,9 @@ export default function Profile() {
   );
 }
 
-/* STYLES */
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.white },
-
-  inputGroup: { paddingHorizontal: 20, marginBottom: 2, marginTop: 10 },
+  inputGroup: { padding: 16 },
   input: {
     backgroundColor: colors.white,
     borderRadius: 10,
@@ -325,150 +336,116 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-
   menuContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 12,
-    marginTop: 20,
+    justifyContent: "center",
+    gap: 12,
+    marginBottom: 10,
   },
   menuItem: {
-    width: 120,
-    height: 40,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
   },
-  menuItemSelected: { backgroundColor: colors.primaryDark },
+  menuItemSelected: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
   menuItemDefault: {
     backgroundColor: colors.white,
-    elevation: 4,
+    borderColor: colors.primary,
   },
-  menuLabel: { fontSize: 12 },
-  menuLabelSelected: { color: colors.white, fontWeight: "bold" },
-  menuLabelDefault: { color: colors.black },
+  menuLabel: { fontWeight: "600" },
+  menuLabelSelected: { color: colors.white },
+  menuLabelDefault: { color: colors.primary },
+  scrollContent: { padding: 16 },
 
-  scrollContent: { paddingBottom: 120 },
-
-  /* TOP 3 */
-  top3Container: { paddingHorizontal: 20, marginTop: 20 },
-  podiumRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-  },
-  podiumCard: {
-    width: "30%",
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    elevation: 4,
-  },
-
-  podiumAvatar: { width: 60, height: 60, borderRadius: 30 },
-  podiumName: { marginTop: 6, fontWeight: "600" },
-  podiumPoints: { color: colors.primary, fontWeight: "700" },
-
-  /* FULL LIST */
-  fullList: { paddingHorizontal: 20, marginTop: 20 },
-  fullListItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-    backgroundColor: colors.white,
-    padding: 12,
-    borderRadius: 10,
-    elevation: 3,
-  },
-  fullListAvatar: { width: 40, height: 40, borderRadius: 20, marginRight: 12 },
-  fullListName: { flex: 1, fontSize: 16, fontWeight: "600" },
-  fullListPoints: { fontWeight: "700", color: colors.primary },
-
-  /* CHALLENGES */
-
+  /* CHALLENGE CARDS */
   card: {
     backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
-    paddingHorizontal: 20,
     marginBottom: 20,
     flexDirection: "row",
     elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
   },
   cardReverse: { flexDirection: "row-reverse" },
   cardImage: { width: 100, height: 100, borderRadius: 12 },
   cardContent: { flex: 1, marginLeft: 16 },
-  cardTitle: { fontWeight: "700", fontSize: 16 },
+  cardTitle: { fontWeight: "700", fontSize: 16, marginBottom: 4 },
   cardText: { fontSize: 13, color: "#555" },
-  link: { marginTop: 8, color: colors.primary, fontWeight: "700" },
+  link: {
+    marginTop: 8,
+    color: colors.primary,
+    fontWeight: "700",
+    textDecorationLine: "underline",
+  },
+  noResultsBox: { padding: 20, alignItems: "center" },
+  noResultsText: { color: "#777" },
 
-  noResultsBox: { alignItems: "center", paddingTop: 40 },
-  noResultsText: { opacity: 0.6, fontSize: 18 },
-  dynamicArea: {
-    paddingTop: 40,
+  /* RANKS */
+  top3Container: { marginVertical: 20 },
+  podiumRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "flex-end",
+  },
+  podiumCard: {
     alignItems: "center",
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: "#f2f2f2",
+    width: 100,
   },
-  dynamicText: {
-    fontSize: 18,
-    color: colors.textPrimary,
-    textAlign: "center",
-    fontWeight: "600",
-  },
-  firstPlace: {
-    marginBottom: 30,
-    backgroundColor: "#227C70",
-  },
+  firstPlace: { backgroundColor: "#ffe680", transform: [{ scale: 1.1 }] },
+  secondPlace: { backgroundColor: "#d9d9d9" },
+  thirdPlace: { backgroundColor: "#f7c08a" },
+  podiumAvatar: { width: 50, height: 50, marginBottom: 6 },
+  podiumName: { fontWeight: "700", fontSize: 14 },
+  podiumPoints: { fontSize: 12, color: "#555" },
 
-  secondPlace: {
-    marginBottom: 10,
-    backgroundColor: "#A4C9B5",
+  fullList: { marginTop: 20 },
+  fullListItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: "#eee",
   },
+  fullListAvatar: { width: 40, height: 40, marginRight: 12 },
+  fullListName: { flex: 1, fontSize: 16 },
+  fullListPoints: { fontWeight: "700", color: colors.primary },
 
-  thirdPlace: {
-    marginBottom: 10,
-    backgroundColor: "#C8E4D5",
-  },
   usersList: {
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    gap: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    marginTop: 20,
   },
-
   userItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.white,
-    padding: 12,
-    borderRadius: 10,
-    elevation: 3,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderColor: "#eee",
   },
-
   userAvatar: {
     width: 40,
     height: 40,
-    borderRadius: 20,
     marginRight: 12,
   },
-
   userName: {
     flex: 1,
     fontSize: 16,
     fontWeight: "600",
-    color: colors.primaryDark,
+    color: colors.textPrimary,
   },
-
-  userIcon: {
-    width: 24,
-    height: 24,
-    tintColor: colors.primaryDark,
+  userType: {
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: "700",
+  },
+  followIcon: {
+    width: 28,
+    height: 28,
+    tintColor: colors.primary,
   },
 });

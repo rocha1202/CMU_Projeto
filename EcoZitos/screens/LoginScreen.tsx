@@ -23,15 +23,15 @@ export default function LoginScreen() {
   const [password, setPassword] = React.useState("");
 
   async function handleLogin() {
-  const result = await signIn(email, password);
+    const result = await signIn(email, password);
 
-  if (result?.error) {
-    Alert.alert("Erro", result.error);
-    return;
+    if (result?.error) {
+      Alert.alert("Erro", result.error);
+      return;
+    }
+
+    navigation.navigate("HomeComLogin");
   }
-
-  navigation.navigate("HomeComLogin");
-}
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -85,12 +85,7 @@ export default function LoginScreen() {
           </Text>
         </Text>
 
-        <Text
-          style={styles.skip}
-          onPress={() => navigation.navigate("HomeSemLogin")}
-        >
-          Skip
-        </Text>
+        <Text style={styles.skip}>Skip</Text>
       </LinearGradient>
     </SafeAreaView>
   );

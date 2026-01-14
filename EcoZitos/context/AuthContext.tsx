@@ -1,11 +1,17 @@
 import React, { createContext, useState } from "react";
 
-export const AuthContext = createContext<any>(null);
+interface AuthContextType {
+  user: any | null;
+  signUp: (userData: any) => Promise<any>;
+  signIn: (email: string, password: string) => Promise<any>;
+  logout: () => void;
+}
 
-export function AuthProvider({ children }: any) {
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
 
-  // SIGNUP
   async function signUp(userData: any) {
     try {
       const response = await fetch("http://10.0.2.2:5000/auth/signup", {
@@ -27,7 +33,6 @@ export function AuthProvider({ children }: any) {
     }
   }
 
-  // LOGIN
   async function signIn(email: string, password: string) {
     try {
       const response = await fetch("http://10.0.2.2:5000/auth/login", {
@@ -50,7 +55,6 @@ export function AuthProvider({ children }: any) {
     }
   }
 
-  // LOGOUT
   function logout() {
     setUser(null);
   }

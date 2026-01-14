@@ -10,7 +10,7 @@ import Onboarding3 from "./screens/Onboarding3";
 
 import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
-import HomeSemLogin from "./screens/HomeSemLogin";
+
 import HomeComLogin from "./screens/HomeComLogin";
 import MyActivity from "./screens/MyActivity";
 import Notifications from "./screens/Notifications";
@@ -31,14 +31,13 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {/* ROTAS LIVRES */}
-          <Stack.Screen name="SplashScreen" component={SplashScreen} />
+          {/* <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="Onboarding1" component={Onboarding1} />
           <Stack.Screen name="Onboarding2" component={Onboarding2} />
-          <Stack.Screen name="Onboarding3" component={Onboarding3} />
+          <Stack.Screen name="Onboarding3" component={Onboarding3} /> */}
 
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
-          <Stack.Screen name="HomeSemLogin" component={HomeSemLogin} />
 
           {/* ROTAS PROTEGIDAS */}
           <Stack.Screen

@@ -9,10 +9,10 @@ import {
   Dimensions,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { colors } from "../theme/colors";
 import Navbar from "../components/Navbar";
-import challengesData from "../api/challenges.json";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 
@@ -25,15 +25,32 @@ const carouselImages = [
 ];
 
 export default function HomeComLogin() {
-  const challenges = challengesData;
   const navigation = useNavigation<any>();
+  const { user } = React.useContext(AuthContext);
 
-  // 🔥 Obter user + logout do contexto
-  const { user, logout } = React.useContext(AuthContext);
+  const [challenges, setChallenges] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  // Buscar challenges ao backend
+  React.useEffect(() => {
+    async function fetchChallenges() {
+      try {
+        const response = await fetch("http://10.0.2.2:5000/challenges");
+        const data = await response.json();
+        setChallenges(data);
+      } catch (error) {
+        console.error("Erro ao buscar challenges:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchChallenges();
+  }, []);
 
   const getImage = (path: string) => {
     if (path.includes("challenge1.png")) {
-      return require("../assets//Challenges/challenge1.png");
+      return require("../assets/Challenges/challenge1.png");
     }
     if (path.includes("challenge2.png")) {
       return require("../assets/Challenges/challenge2.png");
@@ -88,7 +105,7 @@ export default function HomeComLogin() {
             marginBottom: 10,
           }}
         >
-          Welcome, {user.username} 
+          Welcome, {user.username}
         </Text>
       )}
 
@@ -110,19 +127,24 @@ export default function HomeComLogin() {
 
         {/* Challenges */}
         <Text style={styles.subtitle}>Challenges</Text>
-        {challenges.map((item) => (
-          <View
-            key={item.id}
-            style={[styles.card, item.id % 2 === 0 ? styles.cardReverse : null]}
-          >
-            <Image source={getImage(item.image)} style={styles.cardImage} />
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardText}>{item.text}</Text>
-              <Text style={styles.link}>See more</Text>
+
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.primary} />
+        ) : (
+          challenges.map((item) => (
+            <View
+              key={item._id}
+              style={[styles.card, item._id % 2 === 0 ? styles.cardReverse : null]}
+            >
+              <Image source={getImage(item.image)} style={styles.cardImage} />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{item.title}</Text>
+                <Text style={styles.cardText}>{item.text}</Text>
+                <Text style={styles.link}>See more</Text>
+              </View>
             </View>
-          </View>
-        ))}
+          ))
+        )}
       </ScrollView>
 
       {/* Bottom Navigation */}
@@ -137,37 +159,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: colors.white,
   },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  topBarButton: {
-    fontSize: 16,
-    color: colors.primary,
-    fontWeight: "600",
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "800",
-    color: colors.textPrimary,
-    textAlign: "center",
-  },
   subtitle: {
     textAlign: "center",
     marginBottom: 20,
     fontSize: 20,
     color: colors.textPrimary,
     fontWeight: "600",
-  },
-  articlesImage: {
-    width: width - 32,
-    height: 180,
-    borderRadius: 16,
-    marginBottom: 20,
   },
   carouselImage: {
     width: width - 32,
@@ -182,10 +179,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     flexDirection: "row",
     elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
   },
   cardReverse: {
     flexDirection: "row-reverse",
@@ -225,7 +218,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-
   navButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -236,22 +228,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.primary,
   },
-
   activeButton: {
     backgroundColor: colors.primary,
   },
-
   navText: {
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 8,
     color: colors.primary,
   },
-
   activeText: {
     color: colors.white,
   },
-
   navIcon: {
     width: 20,
     height: 20,
