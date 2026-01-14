@@ -22,16 +22,16 @@ export default function LoginScreen() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-  function handleLogin() {
-    const result = signIn(email, password);
+  async function handleLogin() {
+  const result = await signIn(email, password);
 
-    if (result?.error) {
-      Alert.alert("Erro", result.error);
-      return;
-    }
-
-    navigation.navigate("HomeComLogin");
+  if (result?.error) {
+    Alert.alert("Erro", result.error);
+    return;
   }
+
+  navigation.navigate("HomeComLogin");
+}
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

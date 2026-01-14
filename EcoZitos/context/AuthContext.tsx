@@ -5,20 +5,52 @@ export const AuthContext = createContext<any>(null);
 export function AuthProvider({ children }: any) {
   const [user, setUser] = useState<any>(null);
 
-  function signUp(data: any) {
-    setUser(data); // guarda o utilizador em memória
-  }
+  // SIGNUP
+  async function signUp(userData: any) {
+    try {
+      const response = await fetch("http://10.0.2.2:5000/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
 
-  function signIn(email: string, password: string) {
-    if (!user) return { error: "Nenhuma conta criada" };
+      const data = await response.json();
 
-    if (user.email !== email || user.password !== password) {
-      return { error: "Credenciais inválidas" };
+      if (response.ok) {
+        setUser(data.user);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Erro no signup:", error);
+      return { error: "Erro ao comunicar com o servidor" };
     }
-
-    return { success: true };
   }
 
+  // LOGIN
+  async function signIn(email: string, password: string) {
+    try {
+      const response = await fetch("http://10.0.2.2:5000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { error: data.message };
+      }
+
+      setUser(data.user);
+      return { success: true };
+    } catch (error) {
+      console.error("Erro no login:", error);
+      return { error: "Erro ao comunicar com o servidor" };
+    }
+  }
+
+  // LOGOUT
   function logout() {
     setUser(null);
   }

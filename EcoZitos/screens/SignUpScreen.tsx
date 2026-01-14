@@ -17,20 +17,23 @@ export default function SignUpScreen() {
   const navigation = useNavigation<any>();
   const { signUp } = React.useContext(AuthContext);
 
-  // ESTADOS (adicionados)
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [username, setUsername] = React.useState("");
   const [type, setType] = React.useState("");
 
-  function handleSignUp() {
+  async function handleSignUp() {
     if (!email || !password || !username || !type) {
       Alert.alert("Erro", "Preencha todos os campos");
       return;
     }
 
-    // Guardar utilizador em memória (mock)
-    signUp({ email, password, username, type });
+    const result = await signUp({ email, password, username, type });
+
+    if (result?.error) {
+      Alert.alert("Erro", result.error);
+      return;
+    }
 
     Alert.alert("Conta criada!", "Agora pode iniciar sessão.");
     navigation.navigate("Login");
@@ -91,7 +94,7 @@ export default function SignUpScreen() {
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>Sign In</Text>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
 
         <Text style={styles.footerText}>

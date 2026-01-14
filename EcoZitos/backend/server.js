@@ -1,20 +1,16 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import { connectDB } from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose
-  .connect(
-    "mongodb+srv://40220247_db_user:MYRZ9hW5k5a9tzPB@cluster0.7mw4kxg.mongodb.net/ecozitos?retryWrites=true&w=majority"
-  )
-  .then(() => console.log("MongoDB ligado"))
-  .catch((err) => console.log(err));
-app.get("/", (req, res) => {
-  res.send("API EcoZitos a funcionar");
-});
-app.use("/auth", require("./routes/auth"));
+connectDB();
 
-app.listen(3000, () => console.log("Servidor a correr na porta 3000"));
+app.use("/auth", authRoutes);
+
+app.listen(5000, () => {
+  console.log("Servidor a correr na porta 5000");
+});
