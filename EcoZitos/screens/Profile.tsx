@@ -17,7 +17,7 @@ export default function Profile() {
   const navigation = useNavigation<any>();
   const [selected, setSelected] = useState("badges");
 
-  // 🔥 Dados reais do backend
+  // 🔥 Dados reais do utilizador autenticado
   const { user } = useContext(AuthContext);
 
   const menuItems = [
@@ -115,7 +115,7 @@ export default function Profile() {
         />
 
         <View style={styles.infoColumn}>
-          {/* 🔥 Nome real do backend */}
+          {/* 🔥 Nome real */}
           <Text style={styles.name}>{user?.username || "User"}</Text>
 
           {/* 🔥 Email real */}
@@ -394,6 +394,15 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
+  },
+
+  dynamicArea: {
+    paddingTop: 40,
+    alignItems: "center",
+  },
+  dynamicText: {
+    fontSize: 18,
+    color: colors.textPrimary,
   },
 
   challengeTopBar: {

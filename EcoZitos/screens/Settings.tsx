@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import Navbar from "../components/Navbar";
-import { AuthContext } from "../context/AuthContext";
 
 export default function Settings() {
   const navigation = useNavigation<any>();
@@ -20,9 +19,6 @@ export default function Settings() {
   const [notifications, setNotifications] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [location, fingerprint] = useState(true);
-
-  // 🔥 Importar logout do contexto
-  const { logout } = useContext(AuthContext);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -84,8 +80,7 @@ export default function Settings() {
             thumbColor={colors.white}
           />
         </View>
-
-        <View style={styles.switchRow}>
+                <View style={styles.switchRow}>
           <Text style={styles.switchLabel}>Login with fingerprint</Text>
           <Switch
             value={location}
@@ -94,7 +89,6 @@ export default function Settings() {
             thumbColor={colors.white}
           />
         </View>
-
         <View style={styles.switchRow}>
           <Text style={styles.switchLabel}>Push notifications</Text>
           <Switch
@@ -105,14 +99,9 @@ export default function Settings() {
           />
         </View>
 
+
         {/* LOGOUT BUTTON */}
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={() => {
-            logout();                 // 🔥 limpa o utilizador
-            navigation.navigate("Login"); // 🔥 volta ao login
-          }}
-        >
+        <TouchableOpacity style={styles.logoutButton} onPress={() => navigation.navigate("LoginScreen")}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -131,6 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
 
+  /* HEADER */
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -149,10 +139,12 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
 
+  /* SCROLL CONTENT */
   scrollContent: {
     paddingBottom: 140,
   },
 
+  /* NAVBAR FIXA */
   navbarWrapper: {
     position: "absolute",
     bottom: 0,
@@ -162,6 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
 
+  /* LOGOUT BUTTON */
   logoutButton: {
     marginTop: 30,
     marginHorizontal: 20,
@@ -177,6 +170,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
+  /* PRIMARY SECTIONS */
   sectionPrimary: {
     flexDirection: "row",
     alignItems: "center",
@@ -194,6 +188,7 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
 
+  /* NORMAL ITEM */
   sectionItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -217,6 +212,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
 
+  /* SWITCH ROWS */
   switchRow: {
     flexDirection: "row",
     justifyContent: "space-between",

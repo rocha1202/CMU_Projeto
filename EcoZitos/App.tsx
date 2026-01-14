@@ -3,6 +3,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { AuthProvider } from "./context/AuthContext";
 
+import SplashScreen from "./screens/SplashScreen";    
+import Onboarding1 from "./screens/Onboarding1";
+import Onboarding2 from "./screens/Onboarding2";
+import Onboarding3 from "./screens/Onboarding3";
+
 import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
 import HomeSemLogin from "./screens/HomeSemLogin";
@@ -14,6 +19,7 @@ import Settings from "./screens/Settings";
 import ChangePassword from "./screens/ChagePassword";
 import ChangePersonalData from "./screens/ChangePersonalData";
 import Search from "./screens/Search";
+import ProfileOtherUsers from "./screens/ProfileOtherUsers";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -24,8 +30,12 @@ export default function App() {
     <AuthProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-
           {/* ROTAS LIVRES */}
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen name="Onboarding1" component={Onboarding1} />
+          <Stack.Screen name="Onboarding2" component={Onboarding2} />
+          <Stack.Screen name="Onboarding3" component={Onboarding3} />
+
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="HomeSemLogin" component={HomeSemLogin} />
@@ -94,9 +104,12 @@ export default function App() {
             )}
           />
 
-          {/* Search pode ser livre */}
+          {/* Search pode ser livre ou protegida — deixei livre como no teu fluxo */}
           <Stack.Screen name="Search" component={Search} />
-
+          <Stack.Screen
+            name="ProfileOtherUsers"
+            component={ProfileOtherUsers}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

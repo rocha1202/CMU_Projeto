@@ -1,24 +1,15 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import { View, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { AuthContext } from "../context/AuthContext";
 
 export default function ProtectedRoute({ children }: any) {
   const { user } = useContext(AuthContext);
   const navigation = useNavigation<any>();
 
-  // Evita navegação durante o render
-  useEffect(() => {
-    if (!user) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Login" }],
-      });
-    }
-  }, [user]);
-
-  // Enquanto o redirect acontece, mostra um loading
+  // Se não houver user → manda para Login
   if (!user) {
+    navigation.navigate("Login");
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
@@ -26,5 +17,6 @@ export default function ProtectedRoute({ children }: any) {
     );
   }
 
+  // Se houver user → mostra o conteúdo protegido
   return children;
 }
