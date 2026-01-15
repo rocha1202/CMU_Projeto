@@ -17,8 +17,8 @@ export default function Profile() {
   const navigation = useNavigation<any>();
   const [selected, setSelected] = useState("badges");
 
-  // 🔥 Dados reais do utilizador autenticado
-  const { user } = useContext(AuthContext);
+  //Dados reais do utilizador autenticado
+  const { user } = useContext(AuthContext)!;
 
   const menuItems = [
     { key: "badges", label: "Badges" },
@@ -115,15 +115,22 @@ export default function Profile() {
         />
 
         <View style={styles.infoColumn}>
-          {/* 🔥 Nome real */}
+          {/* Nome real */}
           <Text style={styles.name}>{user?.username || "User"}</Text>
 
-          {/* 🔥 Email real */}
-          <Text style={styles.subInfo}>{user?.email || "email@example.com"}</Text>
+          {/* Email real */}
+          <Text style={styles.subInfo}>
+            {user?.email || "email@example.com"}
+          </Text>
 
           {/* Mock data */}
-          <Text style={styles.subInfo}>10 Following</Text>
-          <Text style={styles.subInfo}>10 Followers</Text>
+          <Text style={styles.subInfo}>
+            {user?.friends?.length || 0} Following
+          </Text>
+
+          <Text style={styles.subInfo}>
+            {user?.followers?.length || 0} Followers
+          </Text>
         </View>
 
         <TouchableOpacity

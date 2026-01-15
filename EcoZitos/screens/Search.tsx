@@ -14,30 +14,37 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import Navbar from "../components/Navbar";
 
-export default function Profile() {
+export default function Search() {
   const [selected, setSelected] = useState("challenges");
   const [search, setSearch] = useState("");
-  const { user } = useContext(AuthContext)!;
+  const { user, setUser } = useContext(AuthContext)!;
 
   const [friends, setFriends] = useState<string[]>(user?.friends || []);
 
   const toggleFollow = async (targetId: string) => {
-    const isFollowing = friends.includes(targetId);
+  const isFollowing = friends.includes(targetId);
 
-    const url = isFollowing
-      ? `http://10.0.2.2:5000/users/${targetId}/unfollow`
-      : `http://10.0.2.2:5000/users/${targetId}/follow`;
+  const url = isFollowing
+    ? `http://10.0.2.2:5000/users/${targetId}/unfollow`
+    : `http://10.0.2.2:5000/users/${targetId}/follow`;
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user._id }),
-    });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: user._id }),
+  });
 
-    const data = await response.json();
-    setFriends(data.friends);
-  };
+  const data = await response.json();
 
+  // Atualiza estado local
+  setFriends(data.friends);
+
+  // Atualiza o user global (para o Profile e outros ecrãs)
+  setUser((prev: any) => ({
+    ...prev,
+    friends: data.friends,
+  }));
+};
   // USERS (para ranks)
   const [users, setUsers] = useState<any[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
@@ -84,6 +91,10 @@ export default function Profile() {
     fetchUsers();
   }, []);
   const onlyStudents = users.filter((u) => u.type === "Student");
+  const filteredStudents = onlyStudents.filter((u) =>
+    u.username.toLowerCase().includes(search.toLowerCase())
+  );
+
   // Separar users por categoria
   const teams = users
     .filter((u) => u.type === "Team")
@@ -102,7 +113,10 @@ export default function Profile() {
     classroom,
     app: appUsers,
   };
-
+  const filteredRanks = ranksData[rankCategory].filter((u) =>
+    u.username.toLowerCase().includes(search.toLowerCase())
+  );
+  
   const getImage = (imagePath: string) => {
     if (imagePath.includes("challenge1")) {
       return require("../assets/Challenges/challenge1.png");
@@ -275,7 +289,7 @@ export default function Profile() {
 
                 {/* LISTA COMPLETA */}
                 <View style={styles.fullList}>
-                  {ranksData[rankCategory].slice(3).map((item) => (
+                  {filteredRanks.slice(3).map((item) => (
                     <View key={item._id} style={styles.fullListItem}>
                       <Image
                         source={require("../assets/Icons/Avatar.png")}
@@ -296,7 +310,7 @@ export default function Profile() {
         {/* USERS */}
         {selected === "users" && (
           <View style={styles.usersList}>
-            {onlyStudents.map((user) => (
+            {filteredStudents.map((user) => (
               <View key={user._id} style={styles.userItem}>
                 <Image
                   source={require("../assets/Icons/Avatar.png")}

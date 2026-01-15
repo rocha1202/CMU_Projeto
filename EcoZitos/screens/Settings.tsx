@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 import {
   View,
   Text,
@@ -19,7 +21,7 @@ export default function Settings() {
   const [notifications, setNotifications] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [location, fingerprint] = useState(true);
-
+  const { logout } = useContext(AuthContext)!;
   return (
     <SafeAreaView style={styles.safe}>
       {/* HEADER */}
@@ -80,7 +82,7 @@ export default function Settings() {
             thumbColor={colors.white}
           />
         </View>
-                <View style={styles.switchRow}>
+        <View style={styles.switchRow}>
           <Text style={styles.switchLabel}>Login with fingerprint</Text>
           <Switch
             value={location}
@@ -99,9 +101,16 @@ export default function Settings() {
           />
         </View>
 
-
-        {/* LOGOUT BUTTON */}
-        <TouchableOpacity style={styles.logoutButton} onPress={() => navigation.navigate("LoginScreen")}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => {
+            logout(); // limpa o user do contexto
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          }}
+        >
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </ScrollView>

@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   type: { type: String, required: true },
   points: { type: Number, default: 0 },
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 export default mongoose.model("User", userSchema);

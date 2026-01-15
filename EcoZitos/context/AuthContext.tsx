@@ -2,6 +2,7 @@ import React, { createContext, useState } from "react";
 
 interface AuthContextType {
   user: any | null;
+  setUser: React.Dispatch<React.SetStateAction<any>>;
   signUp: (userData: any) => Promise<any>;
   signIn: (email: string, password: string) => Promise<any>;
   logout: () => void;
@@ -60,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, signUp, signIn, logout }}>
+    <AuthContext.Provider value={{ user, setUser, signUp, signIn, logout }}>
       {children}
     </AuthContext.Provider>
   );
