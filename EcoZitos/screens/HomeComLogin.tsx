@@ -1,4 +1,5 @@
-import * as React from "react";
+// import * as React from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
@@ -26,7 +27,7 @@ const carouselImages = [
 
 export default function HomeComLogin() {
   const navigation = useNavigation<any>();
-  const { user } = React.useContext(AuthContext);
+  const { user } = useContext(AuthContext)!;
 
   const [challenges, setChallenges] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -134,13 +135,22 @@ export default function HomeComLogin() {
           challenges.map((item) => (
             <View
               key={item._id}
-              style={[styles.card, item._id % 2 === 0 ? styles.cardReverse : null]}
+              style={[
+                styles.card,
+                item._id % 2 === 0 ? styles.cardReverse : null,
+              ]}
             >
               <Image source={getImage(item.image)} style={styles.cardImage} />
               <View style={styles.cardContent}>
                 <Text style={styles.cardTitle}>{item.title}</Text>
                 <Text style={styles.cardText}>{item.text}</Text>
-                <Text style={styles.link}>See more</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("ChallengeDetails", { id: item._id })
+                  }
+                >
+                  <Text style={styles.link}>See more</Text>
+                </TouchableOpacity>
               </View>
             </View>
           ))

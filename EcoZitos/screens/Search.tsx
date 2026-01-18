@@ -13,8 +13,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import Navbar from "../components/Navbar";
+import { useNavigation } from "@react-navigation/core";
 
 export default function Search() {
+  const navigation = useNavigation<any>();
+
   const [selected, setSelected] = useState("challenges");
   const [search, setSearch] = useState("");
   const { user, setUser } = useContext(AuthContext)!;
@@ -22,29 +25,29 @@ export default function Search() {
   const [friends, setFriends] = useState<string[]>(user?.friends || []);
 
   const toggleFollow = async (targetId: string) => {
-  const isFollowing = friends.includes(targetId);
+    const isFollowing = friends.includes(targetId);
 
-  const url = isFollowing
-    ? `http://10.0.2.2:5000/users/${targetId}/unfollow`
-    : `http://10.0.2.2:5000/users/${targetId}/follow`;
+    const url = isFollowing
+      ? `http://10.0.2.2:5000/users/${targetId}/unfollow`
+      : `http://10.0.2.2:5000/users/${targetId}/follow`;
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId: user._id }),
-  });
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user._id }),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  // Atualiza estado local
-  setFriends(data.friends);
+    // Atualiza estado local
+    setFriends(data.friends);
 
-  // Atualiza o user global (para o Profile e outros ecrãs)
-  setUser((prev: any) => ({
-    ...prev,
-    friends: data.friends,
-  }));
-};
+    // Atualiza o user global (para o Profile e outros ecrãs)
+    setUser((prev: any) => ({
+      ...prev,
+      friends: data.friends,
+    }));
+  };
   // USERS (para ranks)
   const [users, setUsers] = useState<any[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
@@ -92,7 +95,7 @@ export default function Search() {
   }, []);
   const onlyStudents = users.filter((u) => u.type === "Student");
   const filteredStudents = onlyStudents.filter((u) =>
-    u.username.toLowerCase().includes(search.toLowerCase())
+    u.username.toLowerCase().includes(search.toLowerCase()),
   );
 
   // Separar users por categoria
@@ -114,9 +117,9 @@ export default function Search() {
     app: appUsers,
   };
   const filteredRanks = ranksData[rankCategory].filter((u) =>
-    u.username.toLowerCase().includes(search.toLowerCase())
+    u.username.toLowerCase().includes(search.toLowerCase()),
   );
-  
+
   const getImage = (imagePath: string) => {
     if (imagePath.includes("challenge1")) {
       return require("../assets/Challenges/challenge1.png");
@@ -140,7 +143,7 @@ export default function Search() {
   };
 
   const filteredChallenges = challenges.filter((item) =>
-    item.title.toLowerCase().includes(search.toLowerCase())
+    item.title.toLowerCase().includes(search.toLowerCase()),
   );
 
   const Top3 = ({ data }: { data: any[] }) => {
@@ -247,7 +250,13 @@ export default function Search() {
                 <View style={styles.cardContent}>
                   <Text style={styles.cardTitle}>{item.title}</Text>
                   <Text style={styles.cardText}>{item.text}</Text>
-                  <Text style={styles.link}>See more</Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("ChallengeDetails", { id: item._id })
+                    }
+                  >
+                    <Text style={styles.link}>See more</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             ))

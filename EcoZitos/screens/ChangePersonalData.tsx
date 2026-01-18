@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function ChangePersonalData() {
   const navigation = useNavigation<any>();
-  const { user, signUp } = React.useContext(AuthContext);
+  const { user, signUp } = useContext(AuthContext)!;
 
   // ESTADOS COM VALORES ATUAIS
   const [email, setEmail] = React.useState(user?.email || "");

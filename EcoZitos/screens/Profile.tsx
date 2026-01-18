@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
+
 import {
   View,
   Text,
@@ -16,9 +17,33 @@ import { AuthContext } from "../context/AuthContext";
 export default function Profile() {
   const navigation = useNavigation<any>();
   const [selected, setSelected] = useState("badges");
+  const [challenges, setChallenges] = useState<any[]>([]);
+  const [loadingChallenges, setLoadingChallenges] = useState(true);
 
   //Dados reais do utilizador autenticado
   const { user } = useContext(AuthContext)!;
+  useEffect(() => {
+    async function fetchChallenges() {
+      try {
+        const res = await fetch("http://10.0.2.2:5000/challenges");
+        const data = await res.json();
+        setChallenges(data);
+      } catch (error) {
+        console.log("Erro ao buscar challenges:", error);
+      } finally {
+        setLoadingChallenges(false);
+      }
+    }
+
+    fetchChallenges();
+  }, []);
+  const inProgress = challenges.filter((ch) =>
+    ch.participants?.some((p: any) => p === user._id || p._id === user._id),
+  );
+
+  const favourites = challenges.filter((ch) =>
+    ch.likes?.some((l: any) => l === user._id || l._id === user._id),
+  );
 
   const menuItems = [
     { key: "badges", label: "Badges" },
@@ -26,39 +51,6 @@ export default function Profile() {
     { key: "challenges", label: "Challenges" },
     { key: "reviews", label: "Reviews" },
     { key: "photos", label: "Photo Library" },
-  ];
-
-  const challenges = [
-    {
-      id: 1,
-      title: "Recycling Hero Challenge",
-      image: require("../assets/Challenges/challenge1.png"),
-    },
-    {
-      id: 2,
-      title: "Save water, Save the Planet",
-      image: require("../assets/Challenges/challenge2.png"),
-    },
-    {
-      id: 3,
-      title: "Switch Off & Shine",
-      image: require("../assets/Challenges/challenge3.png"),
-    },
-    {
-      id: 4,
-      title: "Too Good To Go Away",
-      image: require("../assets/Challenges/challenge4.png"),
-    },
-    {
-      id: 5,
-      title: "Green Commuter Challenge",
-      image: require("../assets/Challenges/challenge5.png"),
-    },
-    {
-      id: 6,
-      title: "Plastic-Free Pioneer",
-      image: require("../assets/Challenges/challenge6.png"),
-    },
   ];
 
   const reviews = [
@@ -99,7 +91,24 @@ export default function Profile() {
     { id: 5, image: require("../assets/Photos/photo5.png") },
     { id: 6, image: require("../assets/Photos/photo6.png") },
   ];
+  const getImage = (imagePath: string) => {
+    if (!imagePath) return require("../assets/Challenges/challenge1.png");
 
+    if (imagePath.includes("challenge1"))
+      return require("../assets/Challenges/challenge1.png");
+    if (imagePath.includes("challenge2"))
+      return require("../assets/Challenges/challenge2.png");
+    if (imagePath.includes("challenge3"))
+      return require("../assets/Challenges/challenge3.png");
+    if (imagePath.includes("challenge4"))
+      return require("../assets/Challenges/challenge4.png");
+    if (imagePath.includes("challenge5"))
+      return require("../assets/Challenges/challenge5.png");
+    if (imagePath.includes("challenge6"))
+      return require("../assets/Challenges/challenge6.png");
+
+    return require("../assets/Challenges/challenge1.png");
+  };
   return (
     <SafeAreaView style={styles.safe}>
       {/* HEADER */}
@@ -205,6 +214,7 @@ export default function Profile() {
         {/* CHALLENGES */}
         {selected === "challenges" && (
           <View style={{ width: "100%" }}>
+            {/* IN PROGRESS */}
             <View style={styles.challengeTopBar}>
               <Text style={styles.challengeTopBarText}>In progress</Text>
               <Image
@@ -214,14 +224,28 @@ export default function Profile() {
             </View>
 
             <View style={styles.challengeRow}>
-              {challenges.slice(0, 3).map((item) => (
-                <View key={item.id} style={styles.challengeCard}>
-                  <Image source={item.image} style={styles.challengeImage} />
-                  <Text style={styles.challengeTitle}>{item.title}</Text>
-                </View>
-              ))}
+              {inProgress.length === 0 ? (
+                <Text style={styles.emptyText}>No challenges in progress</Text>
+              ) : (
+                inProgress.map((item) => (
+                  <TouchableOpacity
+                    key={item._id}
+                    style={styles.challengeCard}
+                    onPress={() =>
+                      navigation.navigate("ChallengeDetails", { id: item._id })
+                    }
+                  >
+                    <Image
+                      source={getImage(item.image)}
+                      style={styles.challengeImage}
+                    />
+                    <Text style={styles.challengeTitle}>{item.title}</Text>
+                  </TouchableOpacity>
+                ))
+              )}
             </View>
 
+            {/* FAVOURITES */}
             <View style={styles.challengeTopBar}>
               <Text style={styles.challengeTopBarText}>Favourites</Text>
               <Image
@@ -231,16 +255,28 @@ export default function Profile() {
             </View>
 
             <View style={styles.challengeRow}>
-              {challenges.slice(-3).map((item) => (
-                <View key={item.id} style={styles.challengeCard}>
-                  <Image source={item.image} style={styles.challengeImage} />
-                  <Text style={styles.challengeTitle}>{item.title}</Text>
-                </View>
-              ))}
+              {favourites.length === 0 ? (
+                <Text style={styles.emptyText}>No favourite challenges</Text>
+              ) : (
+                favourites.map((item) => (
+                  <TouchableOpacity
+                    key={item._id}
+                    style={styles.challengeCard}
+                    onPress={() =>
+                      navigation.navigate("ChallengeDetails", { id: item._id })
+                    }
+                  >
+                    <Image
+                      source={getImage(item.image)}
+                      style={styles.challengeImage}
+                    />
+                    <Text style={styles.challengeTitle}>{item.title}</Text>
+                  </TouchableOpacity>
+                ))
+              )}
             </View>
           </View>
         )}
-
         {/* REVIEWS */}
         {selected === "reviews" && (
           <View style={{ width: "100%", paddingHorizontal: 20 }}>
@@ -555,5 +591,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "cover",
+  },
+  emptyText: {
+    textAlign: "center",
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: "500",
+    marginVertical: 20,
+    opacity: 0.7,
   },
 });
