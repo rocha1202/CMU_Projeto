@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/User.js";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 
@@ -14,8 +15,8 @@ router.get("/", async (req, res) => {
 
 router.post("/:id/follow", async (req, res) => {
   try {
-    const { userId } = req.body;        // quem está a seguir
-    const targetId = req.params.id;     // quem vai ser seguido
+    const { userId } = req.body; // quem está a seguir
+    const targetId = req.params.id; // quem vai ser seguido
 
     const user = await User.findById(userId);
     const target = await User.findById(targetId);
@@ -75,4 +76,46 @@ router.post("/:id/unfollow", async (req, res) => {
     res.status(500).json({ message: "Error unfollowing user", error });
   }
 });
+router.put("/:id", async (req, res) => {
+  try {
+    const { email, username } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { email, username },
+      { new: true },
+    );
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao atualizar utilizador", error });
+  }
+});
+
+router.put("/:id/password", async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Comparar password antiga com o hash
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "Old password incorrect" });
+    }
+
+    // Criar novo hash
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating password", error });
+  }
+});
+
 export default router;

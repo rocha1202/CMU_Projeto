@@ -17,7 +17,7 @@ export default function Profile() {
   const navigation = useNavigation<any>();
   const [selected, setSelected] = useState("badges");
 
-  // 🔥 Dados reais do utilizador autenticado
+  // Dados reais do utilizador autenticado
   const { user } = useContext(AuthContext);
 
   const menuItems = [

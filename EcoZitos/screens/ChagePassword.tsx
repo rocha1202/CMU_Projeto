@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -17,35 +17,53 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function ChangePassword() {
   const navigation = useNavigation<any>();
-  const { user, signUp } = React.useContext(AuthContext);
+  const { user, signUp } = useContext(AuthContext)!;
 
   // ESTADOS
   const [oldPass, setOldPass] = React.useState("");
   const [newPass, setNewPass] = React.useState("");
   const [confirmPass, setConfirmPass] = React.useState("");
 
-  function handleSave() {
+  async function handleSave() {
     if (!oldPass || !newPass || !confirmPass) {
-      Alert.alert("Erro", "Preencha todos os campos");
-      return;
-    }
-
-    if (oldPass !== user.password) {
-      Alert.alert("Erro", "A password antiga está incorreta");
+      Alert.alert("Error", "Please fill in all fields.");
       return;
     }
 
     if (newPass !== confirmPass) {
-      Alert.alert("Erro", "A nova password não coincide");
+      Alert.alert("Error", "The new password does not match.");
       return;
     }
 
-    // Atualizar password no mock (AuthContext)
-    const updatedUser = { ...user, password: newPass };
-    signUp(updatedUser);
+    try {
+      const res = await fetch(
+        `http://10.0.2.2:5000/users/${user._id}/password`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            oldPassword: oldPass,
+            newPassword: newPass,
+          }),
+        },
+      );
 
-    Alert.alert("Sucesso", "Password alterada com sucesso!");
-    navigation.goBack();
+      const data = await res.json();
+
+      if (!data.success) {
+        Alert.alert("Error", data.message || "Unable to change password.");
+        return;
+      }
+
+      // Atualizar AuthContext
+      signUp(data.user);
+
+      Alert.alert("Success", "Password updated successfully!");
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while updating the password.");
+      console.log(error);
+    }
   }
 
   return (

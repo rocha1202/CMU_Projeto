@@ -94,9 +94,11 @@ export default function Search() {
     fetchUsers();
   }, []);
   const onlyStudents = users.filter((u) => u.type === "Student");
+  
   const filteredStudents = onlyStudents.filter((u) =>
     u.username.toLowerCase().includes(search.toLowerCase()),
   );
+  const otherUsers = filteredStudents.filter((u) => u._id !== user._id);
 
   // Separar users por categoria
   const teams = users
@@ -319,7 +321,8 @@ export default function Search() {
         {/* USERS */}
         {selected === "users" && (
           <View style={styles.usersList}>
-            {filteredStudents.map((user) => (
+            
+            {otherUsers.map((user) => (
               <View key={user._id} style={styles.userItem}>
                 <Image
                   source={require("../assets/Icons/Avatar.png")}

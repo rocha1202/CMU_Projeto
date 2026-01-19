@@ -53,35 +53,6 @@ export default function Profile() {
     { key: "photos", label: "Photo Library" },
   ];
 
-  const reviews = [
-    {
-      id: 1,
-      challengeTitle: "Recycling Hero Challenge",
-      comment: "Aprendi imenso! Muito divertido e útil.",
-      avatar: require("../assets/Icons/Avatar.png"),
-      name: user?.username || "User",
-      stars: 4,
-      hearts: 12,
-    },
-    {
-      id: 2,
-      challengeTitle: "Save water, Save the Planet",
-      comment: "Gostei bastante, fez-me pensar no desperdício.",
-      avatar: require("../assets/Icons/Avatar.png"),
-      name: user?.username || "User",
-      stars: 5,
-      hearts: 20,
-    },
-    {
-      id: 3,
-      challengeTitle: "Switch Off & Shine",
-      comment: "Muito simples mas eficaz!",
-      avatar: require("../assets/Icons/Avatar.png"),
-      name: user?.username || "User",
-      stars: 3,
-      hearts: 8,
-    },
-  ];
 
   const photos = [
     { id: 1, image: require("../assets/Photos/photo1.png") },
@@ -415,7 +386,6 @@ const styles = StyleSheet.create({
   menuContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 12,
     marginTop: 20,
   },
   noReviewsText: {
@@ -427,13 +397,13 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   menuItem: {
-    width: 88,
-    height: 88,
-    padding: 12,
+    width: 78,
+    height: 78,
+    padding: 5,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-    gap: 4,
+    gap: 3,
   },
   menuItemSelected: {
     backgroundColor: colors.primaryDark,

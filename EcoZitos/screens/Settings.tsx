@@ -67,40 +67,9 @@ export default function Settings() {
           <Text style={styles.sectionItemText}>Change Password</Text>
         </TouchableOpacity>
 
-        {/* APPLICATION SETTINGS */}
-        <View style={styles.sectionPrimary}>
-          <Text style={styles.sectionPrimaryText}>Application Settings</Text>
-        </View>
+        
 
-        {/* SWITCHES */}
-        <View style={styles.switchRow}>
-          <Text style={styles.switchLabel}>Dark theme</Text>
-          <Switch
-            value={darkMode}
-            onValueChange={setDarkMode}
-            trackColor={{ false: "#ccc", true: colors.primary }}
-            thumbColor={colors.white}
-          />
-        </View>
-        <View style={styles.switchRow}>
-          <Text style={styles.switchLabel}>Login with fingerprint</Text>
-          <Switch
-            value={location}
-            onValueChange={fingerprint}
-            trackColor={{ false: "#ccc", true: colors.primary }}
-            thumbColor={colors.white}
-          />
-        </View>
-        <View style={styles.switchRow}>
-          <Text style={styles.switchLabel}>Push notifications</Text>
-          <Switch
-            value={notifications}
-            onValueChange={setNotifications}
-            trackColor={{ false: "#ccc", true: colors.primary }}
-            thumbColor={colors.white}
-          />
-        </View>
-
+      </ScrollView>
         <TouchableOpacity
           style={styles.logoutButton}
           onPress={() => {
@@ -113,8 +82,6 @@ export default function Settings() {
         >
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
-      </ScrollView>
-
       {/* FIXED NAVBAR */}
       <View style={styles.navbarWrapper}>
         <Navbar logged={true} />
@@ -172,6 +139,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
+    bottom: 80,
   },
   logoutText: {
     color: colors.white,

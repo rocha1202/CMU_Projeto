@@ -23,19 +23,31 @@ export default function ChangePersonalData() {
   const [email, setEmail] = React.useState(user?.email || "");
   const [username, setUsername] = React.useState(user?.username || "");
 
-  function handleSave() {
-    if (!email || !username) {
-      Alert.alert("Erro", "Preencha todos os campos");
-      return;
-    }
+async function handleSave() {
+  if (!email || !username) {
+    Alert.alert("Erro", "Preencha todos os campos");
+    return;
+  }
 
-    // Atualizar dados no mock (AuthContext)
-    const updatedUser = { ...user, email, username };
+  try {
+    const res = await fetch(`http://10.0.2.2:5000/users/${user._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, username }),
+    });
+
+    const updatedUser = await res.json();
+
+    // Atualiza o AuthContext
     signUp(updatedUser);
 
-    Alert.alert("Sucesso", "Dados atualizados com sucesso!");
+    Alert.alert("Sucess", "The data has been successfully updated!\nHowever, please log in again to see the changes.");
     navigation.goBack();
+  } catch (error) {
+    Alert.alert("Error", "Cloud not update data. Please try again later.");
+    console.log(error);
   }
+}
 
   return (
     <SafeAreaView style={styles.safe}>
