@@ -93,7 +93,8 @@ export default function Search() {
     }
 
     fetchUsers();
-  }, []);
+  }, [user]);
+ 
   const onlyStudents = users.filter((u) => u.type === "Student");
 
   const filteredStudents = onlyStudents.filter((u) =>
@@ -326,13 +327,25 @@ export default function Search() {
               <TouchableOpacity
                 key={user._id}
                 style={styles.userItem}
-                onPress={() => toggleFollow(user._id)}>
+                onPress={() =>
+                  navigation.navigate("ProfileOtherUsers", { userId: user._id })
+                }
+              >
                 <Image
                   source={require("../assets/Icons/Avatar.png")}
                   style={styles.userAvatar}
                 />
+
                 <Text style={styles.userName}>{user.username}</Text>
-                <TouchableOpacity onPress={() => toggleFollow(user._id)}>
+
+                {/* FOLLOW BUTTON */}
+                <TouchableOpacity
+                  style={styles.followIconWrapper}
+                  onPress={(e) => {
+                    e.stopPropagation(); // impede abrir o perfil
+                    toggleFollow(user._id);
+                  }}
+                >
                   <Image
                     source={
                       friends.includes(user._id)
@@ -474,5 +487,11 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     tintColor: colors.primary,
+  },
+  followIconWrapper: {
+    padding: 6,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

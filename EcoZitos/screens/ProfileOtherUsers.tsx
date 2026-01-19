@@ -23,20 +23,21 @@ export default function ProfileOtherUsers() {
   const [challenges, setChallenges] = useState<any[]>([]);
   const [loadingChallenges, setLoadingChallenges] = useState(true);
   const [otherUser, setOtherUser] = useState<any>(null);
+  const [userReviews, setUserReviews] = useState<any[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
   //Dados reais do utilizador autenticado
-  const { user, signUp } = useContext(AuthContext)!;
+  const { user, signUp, setUser } = useContext(AuthContext)!;
 
-  useEffect(() => {
-    async function fetchOtherUser() {
-      try {
-        const res = await fetch(`http://10.0.2.2:5000/users/${userId}`);
-        const data = await res.json();
-        setOtherUser(data);
-      } catch (error) {
-        console.log("Erro ao buscar o outro user:", error);
-      }
+  const fetchOtherUser = async () => {
+    try {
+      const res = await fetch(`http://10.0.2.2:5000/users/${userId}`);
+      const data = await res.json();
+      setOtherUser(data);
+    } catch (error) {
+      console.log("Erro ao buscar o outro user:", error);
     }
-
+  };
+  useEffect(() => {
     fetchOtherUser();
   }, [userId]);
   useEffect(() => {
@@ -96,8 +97,7 @@ export default function ProfileOtherUsers() {
 
     return require("../assets/Challenges/challenge1.png");
   };
-  const [userReviews, setUserReviews] = useState<any[]>([]);
-  const [loadingReviews, setLoadingReviews] = useState(true);
+
   useEffect(() => {
     async function fetchUserReviews() {
       try {
@@ -113,7 +113,7 @@ export default function ProfileOtherUsers() {
       }
     }
 
-if (userId) fetchUserReviews();
+    if (userId) fetchUserReviews();
   }, [userId]);
   const renderStars = (rating: number) => (
     <View style={{ flexDirection: "row" }}>
@@ -130,39 +130,53 @@ if (userId) fetchUserReviews();
       ))}
     </View>
   );
-  async function toggleFollow(targetUserId: string) {
-  try {
-    const res = await fetch(`http://10.0.2.2:5000/users/${user._id}/follow`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ targetUserId }),
-    });
+const toggleFollow = async (targetId: string) => {
+  const isFollowing = user.friends.includes(targetId);
 
-    const data = await res.json();
+  const url = isFollowing
+    ? `http://10.0.2.2:5000/users/${targetId}/unfollow`
+    : `http://10.0.2.2:5000/users/${targetId}/follow`;
 
-    if (!data.success) {
-      Alert.alert("Error", data.message || "Unable to update follow status.");
-      return;
-    }
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: user._id }),
+  });
 
-    // Atualiza o AuthContext com o novo user (seguindo ou não)
-    signUp(data.updatedUser);
+  const data = await response.json();
 
-    // Atualiza o perfil do outro user (followers)
-    setOtherUser(data.otherUser);
+  if (!data.success) return;
 
-  } catch (error) {
-    console.log("Erro ao seguir/desseguir:", error);
-    Alert.alert("Error", "Something went wrong.");
+  // Atualiza o user autenticado globalmente
+  setUser(data.updatedUser); 
+
+  // Atualiza o outro user localmente
+  setOtherUser(data.otherUser);
+
+  // Recarrega do Mongo
+  fetchOtherUser();
+};
+  if (!otherUser) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <Text style={{ padding: 20 }}>Loading profile...</Text>
+      </SafeAreaView>
+    );
   }
-}
   return (
     <SafeAreaView style={styles.safe}>
       {/* HEADER */}
+
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image
+            source={require("../assets/Icons/Next.png")}
+            style={styles.backIcon}
+          />
+        </TouchableOpacity>
+
         <Text style={styles.headerTitle}>Profile</Text>
       </View>
-
       {/* PROFILE INFO */}
       <View style={styles.profileRow}>
         <Image
@@ -384,13 +398,21 @@ const styles = StyleSheet.create({
   },
 
   header: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+  backIcon: {
+    width: 28,
+    height: 28,
+    transform: [{ rotate: "180deg" }],
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: colors.black,
+    color: colors.primary,
   },
 
   profileRow: {
@@ -439,19 +461,19 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   followButton: {
-  backgroundColor: colors.primary,
-  paddingVertical: 8,
-  paddingHorizontal: 16,
-  borderRadius: 8,
-  justifyContent: "center",
-  alignItems: "center",
-},
+    backgroundColor: colors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
-followText: {
-  color: colors.white,
-  fontSize: 16,
-  fontWeight: "600",
-},
+  followText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "600",
+  },
   menuItem: {
     width: 78,
     height: 78,

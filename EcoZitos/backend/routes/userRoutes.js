@@ -13,6 +13,20 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user", error });
+  }
+});
+
 router.post("/:id/follow", async (req, res) => {
   try {
     const { userId } = req.body; // quem está a seguir
@@ -39,6 +53,9 @@ router.post("/:id/follow", async (req, res) => {
     await target.save();
 
     res.json({
+      success: true,
+      updatedUser: user,
+      otherUser: target,
       friends: user.friends,
       followers: target.followers,
     });
@@ -69,6 +86,9 @@ router.post("/:id/unfollow", async (req, res) => {
     await target.save();
 
     res.json({
+      success: true,
+      updatedUser: user,
+      otherUser: target,
       friends: user.friends,
       followers: target.followers,
     });
