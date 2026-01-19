@@ -38,7 +38,6 @@ export default function App() {
           <Stack.Screen name="Onboarding2" component={Onboarding2} />
           <Stack.Screen name="Onboarding3" component={Onboarding3} /> */}
 
-          
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           {/* ROTAS PROTEGIDAS */}
@@ -114,13 +113,16 @@ export default function App() {
               </ProtectedRoute>
             )}
           />
-          
-          {/* Search pode ser livre ou protegida — deixei livre como no teu fluxo */}
-          <Stack.Screen name="Search" component={Search} />
           <Stack.Screen
             name="ProfileOtherUsers"
-            component={ProfileOtherUsers}
+            children={() => (
+              <ProtectedRoute>
+                <ProfileOtherUsers />
+              </ProtectedRoute>
+            )}
           />
+          {/* Search pode ser livre ou protegida — deixei livre como no teu fluxo */}
+          <Stack.Screen name="Search" component={Search} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

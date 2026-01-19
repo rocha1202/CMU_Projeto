@@ -1,6 +1,7 @@
 import { AuthContext } from "../context/AuthContext";
 import React, { useState, useEffect, useContext } from "react";
 import {
+  Alert,
   View,
   Text,
   TouchableOpacity,
@@ -94,7 +95,7 @@ export default function Search() {
     fetchUsers();
   }, []);
   const onlyStudents = users.filter((u) => u.type === "Student");
-  
+
   const filteredStudents = onlyStudents.filter((u) =>
     u.username.toLowerCase().includes(search.toLowerCase()),
   );
@@ -321,16 +322,16 @@ export default function Search() {
         {/* USERS */}
         {selected === "users" && (
           <View style={styles.usersList}>
-            
             {otherUsers.map((user) => (
-              <View key={user._id} style={styles.userItem}>
+              <TouchableOpacity
+                key={user._id}
+                style={styles.userItem}
+                onPress={() => toggleFollow(user._id)}>
                 <Image
                   source={require("../assets/Icons/Avatar.png")}
                   style={styles.userAvatar}
                 />
-
                 <Text style={styles.userName}>{user.username}</Text>
-
                 <TouchableOpacity onPress={() => toggleFollow(user._id)}>
                   <Image
                     source={
@@ -341,7 +342,7 @@ export default function Search() {
                     style={styles.followIcon}
                   />
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         )}

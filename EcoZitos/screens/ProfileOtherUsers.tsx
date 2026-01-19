@@ -1,5 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
+  Alert,
   View,
   Text,
   StyleSheet,
@@ -12,13 +13,54 @@ import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import Navbar from "../components/Navbar";
 import { AuthContext } from "../context/AuthContext";
+import { useRoute } from "@react-navigation/native";
 
-export default function Profile() {
+export default function ProfileOtherUsers() {
+  const route = useRoute<any>();
+  const { userId } = route.params;
   const navigation = useNavigation<any>();
   const [selected, setSelected] = useState("badges");
+  const [challenges, setChallenges] = useState<any[]>([]);
+  const [loadingChallenges, setLoadingChallenges] = useState(true);
+  const [otherUser, setOtherUser] = useState<any>(null);
+  //Dados reais do utilizador autenticado
+  const { user, signUp } = useContext(AuthContext)!;
 
-  // Dados reais do utilizador autenticado
-  const { user } = useContext(AuthContext);
+  useEffect(() => {
+    async function fetchOtherUser() {
+      try {
+        const res = await fetch(`http://10.0.2.2:5000/users/${userId}`);
+        const data = await res.json();
+        setOtherUser(data);
+      } catch (error) {
+        console.log("Erro ao buscar o outro user:", error);
+      }
+    }
+
+    fetchOtherUser();
+  }, [userId]);
+  useEffect(() => {
+    async function fetchChallenges() {
+      try {
+        const res = await fetch("http://10.0.2.2:5000/challenges");
+        const data = await res.json();
+        setChallenges(data);
+      } catch (error) {
+        console.log("Erro ao buscar challenges:", error);
+      } finally {
+        setLoadingChallenges(false);
+      }
+    }
+
+    fetchChallenges();
+  }, []);
+  const inProgress = challenges.filter((ch) =>
+    ch.participants?.some((p: any) => p === userId || p._id === userId),
+  );
+
+  const favourites = challenges.filter((ch) =>
+    ch.likes?.some((l: any) => l === userId || l._id === userId),
+  );
 
   const menuItems = [
     { key: "badges", label: "Badges" },
@@ -26,69 +68,6 @@ export default function Profile() {
     { key: "challenges", label: "Challenges" },
     { key: "reviews", label: "Reviews" },
     { key: "photos", label: "Photo Library" },
-  ];
-
-  const challenges = [
-    {
-      id: 1,
-      title: "Recycling Hero Challenge",
-      image: require("../assets/Challenges/challenge1.png"),
-    },
-    {
-      id: 2,
-      title: "Save water, Save the Planet",
-      image: require("../assets/Challenges/challenge2.png"),
-    },
-    {
-      id: 3,
-      title: "Switch Off & Shine",
-      image: require("../assets/Challenges/challenge3.png"),
-    },
-    {
-      id: 4,
-      title: "Too Good To Go Away",
-      image: require("../assets/Challenges/challenge4.png"),
-    },
-    {
-      id: 5,
-      title: "Green Commuter Challenge",
-      image: require("../assets/Challenges/challenge5.png"),
-    },
-    {
-      id: 6,
-      title: "Plastic-Free Pioneer",
-      image: require("../assets/Challenges/challenge6.png"),
-    },
-  ];
-
-  const reviews = [
-    {
-      id: 1,
-      challengeTitle: "Recycling Hero Challenge",
-      comment: "Aprendi imenso! Muito divertido e útil.",
-      avatar: require("../assets/Icons/Avatar.png"),
-      name: user?.username || "User",
-      stars: 4,
-      hearts: 12,
-    },
-    {
-      id: 2,
-      challengeTitle: "Save water, Save the Planet",
-      comment: "Gostei bastante, fez-me pensar no desperdício.",
-      avatar: require("../assets/Icons/Avatar.png"),
-      name: user?.username || "User",
-      stars: 5,
-      hearts: 20,
-    },
-    {
-      id: 3,
-      challengeTitle: "Switch Off & Shine",
-      comment: "Muito simples mas eficaz!",
-      avatar: require("../assets/Icons/Avatar.png"),
-      name: user?.username || "User",
-      stars: 3,
-      hearts: 8,
-    },
   ];
 
   const photos = [
@@ -99,7 +78,84 @@ export default function Profile() {
     { id: 5, image: require("../assets/Photos/photo5.png") },
     { id: 6, image: require("../assets/Photos/photo6.png") },
   ];
+  const getImage = (imagePath: string) => {
+    if (!imagePath) return require("../assets/Challenges/challenge1.png");
 
+    if (imagePath.includes("challenge1"))
+      return require("../assets/Challenges/challenge1.png");
+    if (imagePath.includes("challenge2"))
+      return require("../assets/Challenges/challenge2.png");
+    if (imagePath.includes("challenge3"))
+      return require("../assets/Challenges/challenge3.png");
+    if (imagePath.includes("challenge4"))
+      return require("../assets/Challenges/challenge4.png");
+    if (imagePath.includes("challenge5"))
+      return require("../assets/Challenges/challenge5.png");
+    if (imagePath.includes("challenge6"))
+      return require("../assets/Challenges/challenge6.png");
+
+    return require("../assets/Challenges/challenge1.png");
+  };
+  const [userReviews, setUserReviews] = useState<any[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  useEffect(() => {
+    async function fetchUserReviews() {
+      try {
+        const res = await fetch(
+          `http://10.0.2.2:5000/challenges/user/${userId}/reviews`,
+        );
+        const data = await res.json();
+        setUserReviews(data);
+      } catch (error) {
+        console.log("Erro ao buscar reviews do user:", error);
+      } finally {
+        setLoadingReviews(false);
+      }
+    }
+
+if (userId) fetchUserReviews();
+  }, [userId]);
+  const renderStars = (rating: number) => (
+    <View style={{ flexDirection: "row" }}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Image
+          key={star}
+          source={
+            star <= rating
+              ? require("../assets/Icons/star1.png")
+              : require("../assets/Icons/star2.png")
+          }
+          style={{ width: 15, height: 15, marginRight: 3 }}
+        />
+      ))}
+    </View>
+  );
+  async function toggleFollow(targetUserId: string) {
+  try {
+    const res = await fetch(`http://10.0.2.2:5000/users/${user._id}/follow`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ targetUserId }),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      Alert.alert("Error", data.message || "Unable to update follow status.");
+      return;
+    }
+
+    // Atualiza o AuthContext com o novo user (seguindo ou não)
+    signUp(data.updatedUser);
+
+    // Atualiza o perfil do outro user (followers)
+    setOtherUser(data.otherUser);
+
+  } catch (error) {
+    console.log("Erro ao seguir/desseguir:", error);
+    Alert.alert("Error", "Something went wrong.");
+  }
+}
   return (
     <SafeAreaView style={styles.safe}>
       {/* HEADER */}
@@ -116,18 +172,29 @@ export default function Profile() {
 
         <View style={styles.infoColumn}>
           {/* Nome real */}
-          <Text style={styles.name}>{user?.username || "User"}</Text>
+          <Text style={styles.name}>{otherUser?.username}</Text>
+          {/* Email real */}
+          <Text style={styles.subInfo}>
+            {otherUser?.email || "email@example.com"}
+          </Text>
 
           {/* Mock data */}
-          <Text style={styles.subInfo}>10 Following</Text>
-          <Text style={styles.subInfo}>10 Followers</Text>
+          <Text style={styles.subInfo}>
+            {otherUser?.friends?.length || 0} Following
+          </Text>
+
+          <Text style={styles.subInfo}>
+            {otherUser?.followers?.length || 0} Followers
+          </Text>
         </View>
 
-        <TouchableOpacity style={styles.settingsButton}>
-          <Image
-            source={require("../assets/Icons/addUser.png")}
-            style={styles.icon}
-          />
+        <TouchableOpacity
+          style={styles.followButton}
+          onPress={() => toggleFollow(otherUser._id)}
+        >
+          <Text style={styles.followText}>
+            {user.friends?.includes(otherUser._id) ? "Unfollow" : "Follow"}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -192,73 +259,104 @@ export default function Profile() {
         {/* CHALLENGES */}
         {selected === "challenges" && (
           <View style={{ width: "100%" }}>
+            {/* IN PROGRESS */}
             <View style={styles.challengeTopBar}>
               <Text style={styles.challengeTopBarText}>In progress</Text>
-              <Image
-                source={require("../assets/Icons/Next.png")}
-                style={styles.progressIcon}
-              />
             </View>
 
-            <View style={styles.challengeRow}>
-              {challenges.slice(0, 3).map((item) => (
-                <View key={item.id} style={styles.challengeCard}>
-                  <Image source={item.image} style={styles.challengeImage} />
-                  <Text style={styles.challengeTitle}>{item.title}</Text>
-                </View>
-              ))}
-            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.challengeRow}
+            >
+              {inProgress.length === 0 ? (
+                <Text style={styles.emptyText}>No challenges in progress</Text>
+              ) : (
+                inProgress.map((item) => (
+                  <TouchableOpacity
+                    key={item._id}
+                    style={styles.challengeCard}
+                    onPress={() =>
+                      navigation.navigate("ChallengeDetails", { id: item._id })
+                    }
+                  >
+                    <Image
+                      source={getImage(item.image)}
+                      style={styles.challengeImage}
+                    />
+                    <Text style={styles.challengeTitle}>{item.title}</Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
 
+            {/* FAVOURITES */}
             <View style={styles.challengeTopBar}>
               <Text style={styles.challengeTopBarText}>Favourites</Text>
-              <Image
-                source={require("../assets/Icons/Next.png")}
-                style={styles.progressIcon}
-              />
             </View>
-
-            <View style={styles.challengeRow}>
-              {challenges.slice(-3).map((item) => (
-                <View key={item.id} style={styles.challengeCard}>
-                  <Image source={item.image} style={styles.challengeImage} />
-                  <Text style={styles.challengeTitle}>{item.title}</Text>
-                </View>
-              ))}
-            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.challengeRow}
+            >
+              {favourites.length === 0 ? (
+                <Text style={styles.emptyText}>No favourite challenges</Text>
+              ) : (
+                favourites.map((item) => (
+                  <TouchableOpacity
+                    key={item._id}
+                    style={styles.challengeCard}
+                    onPress={() =>
+                      navigation.navigate("ChallengeDetails", { id: item._id })
+                    }
+                  >
+                    <Image
+                      source={getImage(item.image)}
+                      style={styles.challengeImage}
+                    />
+                    <Text style={styles.challengeTitle}>{item.title}</Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
           </View>
         )}
-
         {/* REVIEWS */}
         {selected === "reviews" && (
           <View style={{ width: "100%", paddingHorizontal: 20 }}>
-            {reviews.map((item) => (
-              <View key={item.id} style={styles.reviewCard}>
-                <View style={styles.reviewRow1}>
-                  <Text style={styles.reviewTitle}>{item.challengeTitle}</Text>
-                  <Image
-                    source={require("../assets/Icons/Stars.png")}
-                    style={styles.starsRow}
-                  />
-                </View>
-
-                <Text style={styles.reviewComment}>{item.comment}</Text>
-
-                <View style={styles.reviewRow3}>
-                  <View style={styles.reviewUser}>
-                    <Image source={item.avatar} style={styles.reviewAvatar} />
-                    <Text style={styles.reviewUserName}>{item.name}</Text>
+            {loadingReviews ? (
+              <Text style={styles.noReviewsText}>Loading reviews...</Text>
+            ) : userReviews.length === 0 ? (
+              <Text style={styles.noReviewsText}>
+                You haven't written any reviews yet
+              </Text>
+            ) : (
+              userReviews.map((rev, index) => (
+                <View key={index} style={styles.reviewCard}>
+                  {/* Challenge Title + Stars */}
+                  <View style={styles.reviewRow1}>
+                    <Text style={styles.reviewTitle}>{rev.challengeTitle}</Text>
+                    {renderStars(rev.rating)}
                   </View>
 
-                  <View style={styles.reviewHearts}>
-                    <Image
-                      source={require("../assets/Icons/heart.png")}
-                      style={styles.heartIcon}
-                    />
-                    <Text style={styles.heartCount}>{item.hearts}</Text>
+                  {/* Comment */}
+                  <Text style={styles.reviewComment}>{rev.comment}</Text>
+
+                  {/* User */}
+                  <View style={styles.reviewRow3}>
+                    <View style={styles.reviewUser}>
+                      <Image
+                        source={require("../assets/Icons/Avatar.png")}
+                        style={styles.reviewAvatar}
+                      />
+                      <Text style={styles.reviewUserName}>
+                        {otherUser?.username}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            ))}
+              ))
+            )}
           </View>
         )}
 
@@ -323,25 +421,45 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   icon: {
-    width: 25,
-    height: 25,
-    color: colors.primary,
+    width: 30,
+    height: 30,
   },
 
   menuContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 12,
     marginTop: 20,
   },
+  noReviewsText: {
+    textAlign: "center",
+    color: colors.primaryDark,
+    fontSize: 16,
+    fontWeight: "500",
+    marginTop: 20,
+    opacity: 0.7,
+  },
+  followButton: {
+  backgroundColor: colors.primary,
+  paddingVertical: 8,
+  paddingHorizontal: 16,
+  borderRadius: 8,
+  justifyContent: "center",
+  alignItems: "center",
+},
+
+followText: {
+  color: colors.white,
+  fontSize: 16,
+  fontWeight: "600",
+},
   menuItem: {
-    width: 88,
-    height: 88,
-    padding: 12,
+    width: 78,
+    height: 78,
+    padding: 5,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-    gap: 4,
+    gap: 3,
   },
   menuItemSelected: {
     backgroundColor: colors.primaryDark,
@@ -423,13 +541,21 @@ const styles = StyleSheet.create({
 
   challengeRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginBottom: 30,
+    alignItems: "center",
+    paddingVertical: 10,
+    gap: 10,
+    paddingLeft: 10, // para não colar à esquerda
   },
   challengeCard: {
-    width: "30%",
+    width: 110,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 10,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   challengeImage: {
     width: "100%",
@@ -543,5 +669,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "cover",
+  },
+  emptyText: {
+    textAlign: "center",
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: "500",
+    marginVertical: 20,
+    opacity: 0.7,
   },
 });
