@@ -74,14 +74,10 @@ router.post("/:id/toggle-like", async (req, res) => {
     if (!challenge)
       return res.status(404).json({ message: "Challenge não encontrado" });
 
-    const alreadyLiked = challenge.likes.some(
-      (u) => u.toString() === userId
-    );
+    const alreadyLiked = challenge.likes.some((u) => u.toString() === userId);
 
     if (alreadyLiked) {
-      challenge.likes = challenge.likes.filter(
-        (u) => u.toString() !== userId
-      );
+      challenge.likes = challenge.likes.filter((u) => u.toString() !== userId);
     } else {
       challenge.likes.push(userId);
     }
@@ -95,26 +91,27 @@ router.post("/:id/toggle-like", async (req, res) => {
 });
 router.post("/:id/review", async (req, res) => {
   try {
-    const { userId, comment, stars } = req.body;
+    const { userId, rating, review, photos } = req.body;
 
     const challenge = await Challenge.findById(req.params.id);
     if (!challenge)
-      return res.status(404).json({ message: "Challenge não encontrado" });
+      return res.status(404).json({ message: "Challenge not found" });
 
-    const review = {
+    const newReview = {
       user: userId,
-      comment,
-      stars,
+      rating,
+      comment: review,
+      photos: photos || [],
       hearts: 0,
       createdAt: new Date(),
     };
 
-    challenge.reviews.push(review);
+    challenge.reviews.push(newReview);
     await challenge.save();
 
-    res.json(challenge.reviews);
+    res.json({ success: true, review: newReview });
   } catch (error) {
-    res.status(500).json({ message: "Erro ao adicionar review", error });
+    res.status(500).json({ message: "Error saving review", error });
   }
 });
 
@@ -134,5 +131,35 @@ router.post("/:id/photo", async (req, res) => {
     res.status(500).json({ message: "Erro ao adicionar foto", error });
   }
 });
+router.get("/user/:userId/reviews", async (req, res) => {
+  try {
+    const { userId } = req.params;
 
+    const challenges = await Challenge.find({
+      "reviews.user": userId,
+    }).populate("reviews.user", "username");
+
+    // Extrair apenas os reviews do user
+    const userReviews = [];
+
+    challenges.forEach((ch) => {
+      ch.reviews.forEach((r) => {
+        if (r.user && r.user._id.toString() === userId) {
+          userReviews.push({
+            challengeId: ch._id,
+            challengeTitle: ch.title,
+            rating: r.rating,
+            comment: r.comment,
+            photos: r.photos,
+            createdAt: r.createdAt,
+          });
+        }
+      });
+    });
+
+    res.json(userReviews);
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao buscar reviews", error });
+  }
+});
 export default router;

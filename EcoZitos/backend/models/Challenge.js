@@ -8,15 +8,16 @@ const challengeSchema = new mongoose.Schema({
   dateEnd: { type: Date, required: true },
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   photos: [String], // ou array de objetos se quiseres mais detalhe
-  reviews: [
-    {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      comment: String,
-      stars: Number,
-      hearts: Number,
-      createdAt: { type: Date, default: Date.now },
-    },
-  ],
+reviews: [
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    rating: Number,
+    comment: String,
+    photos: [String],
+    hearts: { type: Number, default: 0 },
+    createdAt: Date,
+  }
+],
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 

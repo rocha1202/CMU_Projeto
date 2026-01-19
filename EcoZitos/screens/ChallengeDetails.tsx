@@ -13,6 +13,8 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { colors } from "../theme/colors";
 import Navbar from "../components/Navbar";
 import { AuthContext } from "../context/AuthContext";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 type RouteParams = {
   id: string;
@@ -53,39 +55,45 @@ export default function ChallengeDetails() {
       console.log("Erro ao alternar like:", error);
     }
   };
-  useEffect(() => {
-    async function fetchChallenge() {
-      try {
-        const res = await fetch(`http://10.0.2.2:5000/challenges/${id}`);
-        const data = await res.json();
-        setChallenge(data);
+  const fetchChallenge = async () => {
+    try {
+      const res = await fetch(`http://10.0.2.2:5000/challenges/${id}`);
+      const data = await res.json();
+      setChallenge(data);
 
-        // PARTICIPAÇÃO
-        if (
-          user &&
-          data.participants?.some(
-            (p: any) => p === user._id || p._id === user._id,
-          )
-        ) {
-          setParticipating(true);
-        }
-
-        // LIKE
-        if (
-          user &&
-          data.likes?.some((u: any) => u === user._id || u._id === user._id)
-        ) {
-          setLiked(true);
-        }
-      } catch (error) {
-        console.log("Erro ao buscar challenge:", error);
-      } finally {
-        setLoading(false);
+      if (
+        user &&
+        data.participants?.some(
+          (p: any) => p === user._id || p?._id === user._id,
+        )
+      ) {
+        setParticipating(true);
+      } else {
+        setParticipating(false);
       }
-    }
 
+      if (
+        user &&
+        data.likes?.some((u: any) => u === user._id || u?._id === user._id)
+      ) {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
+    } catch (error) {
+      console.log("Erro ao buscar challenge:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchChallenge();
   }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchChallenge();
+    }, [id]),
+  );
   const getImage = (imagePath: string) => {
     if (!imagePath) return require("../assets/Challenges/challenge1.png");
 
@@ -197,6 +205,23 @@ export default function ChallengeDetails() {
     const elapsed = now - start;
 
     return Math.round((elapsed / total) * 100);
+  };
+  const renderStars = (rating: number) => {
+    return (
+      <View style={{ flexDirection: "row" }}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Image
+            key={star}
+            source={
+              star <= rating
+                ? require("../assets/Icons/star1.png") // estrela cheia
+                : require("../assets/Icons/star2.png") // estrela vazia
+            }
+            style={{ width: 15, height: 15, marginRight: 3 }}
+          />
+        ))}
+      </View>
+    );
   };
   const progress = calculateProgress();
   return (
@@ -314,14 +339,13 @@ export default function ChallengeDetails() {
         {challenge.reviews && challenge.reviews.length > 0 ? (
           challenge.reviews.map((rev: any, index: number) => (
             <View key={index} style={styles.reviewCard}>
+              {/* Comentário + Estrelas */}
               <View style={styles.reviewRow1}>
                 <Text style={styles.reviewComment}>{rev.comment}</Text>
-                <Image
-                  source={require("../assets/Icons/Stars.png")}
-                  style={styles.starsRow}
-                />
+                {renderStars(rev.rating)}
               </View>
 
+              {/* User */}
               <View style={styles.reviewRow3}>
                 <View style={styles.reviewUser}>
                   <Image
@@ -332,22 +356,16 @@ export default function ChallengeDetails() {
                     {rev.user?.username || "User"}
                   </Text>
                 </View>
-
-                <View style={styles.reviewHearts}>
-                  <Image
-                    source={require("../assets/Icons/heart.png")}
-                    style={styles.heartIcon}
-                  />
-                  <Text style={styles.heartCount}>{rev.hearts || 0}</Text>
-                </View>
               </View>
             </View>
           ))
         ) : (
           <Text style={styles.noReviewsText}>No reviews yet</Text>
         )}
-
-        {/* BOTÃO PARTICIPAR */}
+      </ScrollView>
+      {/* BOTÃO PARTICIPAR */}
+      {/* BOTÕES FIXOS */}
+      <View style={styles.fixedButtonsContainer}>
         {!participating ? (
           <TouchableOpacity
             style={styles.participateButton}
@@ -359,7 +377,9 @@ export default function ChallengeDetails() {
           <View style={styles.participatingActions}>
             <TouchableOpacity
               style={styles.shareButton}
-              onPress={navigation.navigate("ShareChallenge", { challenge })}
+              onPress={() =>
+                navigation.navigate("ShareChallenge", { challenge })
+              }
             >
               <Text style={styles.shareText}>Share Challenge</Text>
             </TouchableOpacity>
@@ -372,7 +392,7 @@ export default function ChallengeDetails() {
             </TouchableOpacity>
           </View>
         )}
-      </ScrollView>
+      </View>
 
       <Navbar logged={true} />
     </SafeAreaView>
@@ -546,50 +566,58 @@ const styles = StyleSheet.create({
     color: colors.primary,
     marginTop: 6,
   },
+
+  fixedButtonsContainer: {
+    position: "absolute",
+    bottom: 100, // fica por cima da navbar
+    left: 20,
+    right: 20,
+  },
+
   participateButton: {
-    marginTop: 24,
     backgroundColor: colors.primary,
-    paddingVertical: 14,
-    borderRadius: 24,
+    paddingVertical: 16,
+    borderRadius: 30,
     alignItems: "center",
   },
-  participateText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: "600",
-  },
+
   participatingActions: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
   },
 
   shareButton: {
     flex: 1,
     backgroundColor: colors.primary,
-    paddingVertical: 14,
-    borderRadius: 24,
-    marginRight: 10,
+    paddingVertical: 16,
+    borderRadius: 30,
     alignItems: "center",
+    marginRight: 10,
   },
 
   leaveButton: {
     flex: 1,
     backgroundColor: "#FF6B6B",
-    paddingVertical: 14,
-    borderRadius: 24,
-    marginLeft: 10,
+    paddingVertical: 16,
+    borderRadius: 30,
     alignItems: "center",
+    marginLeft: 10,
+  },
+
+  participateText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "700",
   },
 
   shareText: {
-    color: colors.white,
+    color: "white",
     fontSize: 16,
     fontWeight: "600",
   },
 
   leaveText: {
-    color: colors.white,
+    color: "white",
     fontSize: 16,
     fontWeight: "600",
   },

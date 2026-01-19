@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -25,7 +26,43 @@ export default function ShareChallenge() {
   const handleSelectStar = (value: number) => {
     setRating(value);
   };
+  const { user } = useContext(AuthContext)!;
 
+  const handleShare = async () => {
+    if (!user) return;
+    if (rating === 0) {
+      alert("Please select a rating");
+      return;
+    }
+
+    if (review.trim().length < 3) {
+      alert("Please write a short review");
+      return;
+    }
+    try {
+      const res = await fetch(
+        `http://10.0.2.2:5000/challenges/${challenge._id}/review`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user._id,
+            rating,
+            review,
+            photos,
+          }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        navigation.goBack(); // volta ao ChallengeDetails
+      }
+    } catch (error) {
+      console.log("Erro ao enviar review:", error);
+    }
+  };
   return (
     <SafeAreaView style={styles.safe}>
       {/* HEADER */}
@@ -85,7 +122,7 @@ export default function ShareChallenge() {
       </ScrollView>
 
       {/* BOTÃO SHARE */}
-      <TouchableOpacity style={styles.shareButton}>
+      <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
         <Text style={styles.shareButtonText}>Share</Text>
       </TouchableOpacity>
 

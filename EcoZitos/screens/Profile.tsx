@@ -109,6 +109,40 @@ export default function Profile() {
 
     return require("../assets/Challenges/challenge1.png");
   };
+  const [userReviews, setUserReviews] = useState<any[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  useEffect(() => {
+    async function fetchUserReviews() {
+      try {
+        const res = await fetch(
+          `http://10.0.2.2:5000/challenges/user/${user._id}/reviews`,
+        );
+        const data = await res.json();
+        setUserReviews(data);
+      } catch (error) {
+        console.log("Erro ao buscar reviews do user:", error);
+      } finally {
+        setLoadingReviews(false);
+      }
+    }
+
+    if (user) fetchUserReviews();
+  }, [user]);
+  const renderStars = (rating: number) => (
+    <View style={{ flexDirection: "row" }}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Image
+          key={star}
+          source={
+            star <= rating
+              ? require("../assets/Icons/star1.png")
+              : require("../assets/Icons/star2.png")
+          }
+          style={{ width: 15, height: 15, marginRight: 3 }}
+        />
+      ))}
+    </View>
+  );
   return (
     <SafeAreaView style={styles.safe}>
       {/* HEADER */}
@@ -217,13 +251,13 @@ export default function Profile() {
             {/* IN PROGRESS */}
             <View style={styles.challengeTopBar}>
               <Text style={styles.challengeTopBarText}>In progress</Text>
-              <Image
-                source={require("../assets/Icons/Next.png")}
-                style={styles.progressIcon}
-              />
             </View>
 
-            <View style={styles.challengeRow}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.challengeRow}
+            >
               {inProgress.length === 0 ? (
                 <Text style={styles.emptyText}>No challenges in progress</Text>
               ) : (
@@ -243,18 +277,17 @@ export default function Profile() {
                   </TouchableOpacity>
                 ))
               )}
-            </View>
+            </ScrollView>
 
             {/* FAVOURITES */}
             <View style={styles.challengeTopBar}>
               <Text style={styles.challengeTopBarText}>Favourites</Text>
-              <Image
-                source={require("../assets/Icons/Next.png")}
-                style={styles.progressIcon}
-              />
             </View>
-
-            <View style={styles.challengeRow}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.challengeRow}
+            >
               {favourites.length === 0 ? (
                 <Text style={styles.emptyText}>No favourite challenges</Text>
               ) : (
@@ -274,40 +307,43 @@ export default function Profile() {
                   </TouchableOpacity>
                 ))
               )}
-            </View>
+            </ScrollView>
           </View>
         )}
         {/* REVIEWS */}
         {selected === "reviews" && (
           <View style={{ width: "100%", paddingHorizontal: 20 }}>
-            {reviews.map((item) => (
-              <View key={item.id} style={styles.reviewCard}>
-                <View style={styles.reviewRow1}>
-                  <Text style={styles.reviewTitle}>{item.challengeTitle}</Text>
-                  <Image
-                    source={require("../assets/Icons/Stars.png")}
-                    style={styles.starsRow}
-                  />
-                </View>
-
-                <Text style={styles.reviewComment}>{item.comment}</Text>
-
-                <View style={styles.reviewRow3}>
-                  <View style={styles.reviewUser}>
-                    <Image source={item.avatar} style={styles.reviewAvatar} />
-                    <Text style={styles.reviewUserName}>{item.name}</Text>
+            {loadingReviews ? (
+              <Text style={styles.noReviewsText}>Loading reviews...</Text>
+            ) : userReviews.length === 0 ? (
+              <Text style={styles.noReviewsText}>
+                You haven't written any reviews yet
+              </Text>
+            ) : (
+              userReviews.map((rev, index) => (
+                <View key={index} style={styles.reviewCard}>
+                  {/* Challenge Title + Stars */}
+                  <View style={styles.reviewRow1}>
+                    <Text style={styles.reviewTitle}>{rev.challengeTitle}</Text>
+                    {renderStars(rev.rating)}
                   </View>
 
-                  <View style={styles.reviewHearts}>
-                    <Image
-                      source={require("../assets/Icons/heart.png")}
-                      style={styles.heartIcon}
-                    />
-                    <Text style={styles.heartCount}>{item.hearts}</Text>
+                  {/* Comment */}
+                  <Text style={styles.reviewComment}>{rev.comment}</Text>
+
+                  {/* User */}
+                  <View style={styles.reviewRow3}>
+                    <View style={styles.reviewUser}>
+                      <Image
+                        source={require("../assets/Icons/Avatar.png")}
+                        style={styles.reviewAvatar}
+                      />
+                      <Text style={styles.reviewUserName}>{user.username}</Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            ))}
+              ))
+            )}
           </View>
         )}
 
@@ -381,6 +417,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 12,
     marginTop: 20,
+  },
+  noReviewsText: {
+    textAlign: "center",
+    color: colors.primaryDark,
+    fontSize: 16,
+    fontWeight: "500",
+    marginTop: 20,
+    opacity: 0.7,
   },
   menuItem: {
     width: 88,
@@ -471,13 +515,21 @@ const styles = StyleSheet.create({
 
   challengeRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginBottom: 30,
+    alignItems: "center",
+    paddingVertical: 10,
+    gap: 10,
+    paddingLeft: 10, // para não colar à esquerda
   },
   challengeCard: {
-    width: "30%",
+    width: 110,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 10,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   challengeImage: {
     width: "100%",
