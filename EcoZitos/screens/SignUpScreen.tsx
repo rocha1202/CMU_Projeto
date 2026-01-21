@@ -12,10 +12,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
 export default function SignUpScreen() {
   const navigation = useNavigation<any>();
-  const { signUp } = React.useContext(AuthContext);
+  const { signUp } = useContext(AuthContext)!;
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");

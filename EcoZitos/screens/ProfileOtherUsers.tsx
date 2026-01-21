@@ -26,7 +26,7 @@ export default function ProfileOtherUsers() {
   const [userReviews, setUserReviews] = useState<any[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
   //Dados reais do utilizador autenticado
-  const { user, signUp, setUser } = useContext(AuthContext)!;
+  const { user, setUser } = useContext(AuthContext)!;
 
   const fetchOtherUser = async () => {
     try {

@@ -12,8 +12,6 @@ import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
 
 import HomeComLogin from "./screens/HomeComLogin";
-import MyActivity from "./screens/MyActivity";
-import Notifications from "./screens/Notifications";
 import Profile from "./screens/Profile";
 import Settings from "./screens/Settings";
 import ChangePassword from "./screens/ChagePassword";
@@ -33,10 +31,10 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {/* ROTAS LIVRES */}
-          {/* <Stack.Screen name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
           <Stack.Screen name="Onboarding1" component={Onboarding1} />
           <Stack.Screen name="Onboarding2" component={Onboarding2} />
-          <Stack.Screen name="Onboarding3" component={Onboarding3} /> */}
+          <Stack.Screen name="Onboarding3" component={Onboarding3} />
 
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
@@ -54,22 +52,6 @@ export default function App() {
             children={() => (
               <ProtectedRoute>
                 <Profile />
-              </ProtectedRoute>
-            )}
-          />
-          <Stack.Screen
-            name="MyActivity"
-            children={() => (
-              <ProtectedRoute>
-                <MyActivity />
-              </ProtectedRoute>
-            )}
-          />
-          <Stack.Screen
-            name="Notifications"
-            children={() => (
-              <ProtectedRoute>
-                <Notifications />
               </ProtectedRoute>
             )}
           />

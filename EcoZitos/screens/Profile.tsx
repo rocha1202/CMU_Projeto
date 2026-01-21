@@ -132,9 +132,9 @@ export default function Profile() {
           {/* Nome real */}
           <Text style={styles.name}>{user?.username || "User"}</Text>
 
-          {/* Email real */}
+          {/* Pontos reais */}
           <Text style={styles.subInfo}>
-            {user?.email || "email@example.com"}
+            {"Points: "+user?.points|| "email@example.com"}
           </Text>
 
           {/* Mock data */}

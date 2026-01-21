@@ -13,10 +13,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
-  const { signIn } = React.useContext(AuthContext);
+  const { user, signIn } = useContext(AuthContext)!;
 
   // ESTADOS (adicionados)
   const [email, setEmail] = React.useState("");

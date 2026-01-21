@@ -4,7 +4,7 @@ import { View, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 export default function ProtectedRoute({ children }: any) {
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext)!;
   const navigation = useNavigation<any>();
 
   // Se não houver user → manda para Login

@@ -1,5 +1,5 @@
 // import * as React from "react";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
@@ -73,27 +73,6 @@ export default function HomeComLogin() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {/* Top Navigation */}
-      <View style={styles.navButtons}>
-        <TouchableOpacity style={[styles.navButton, styles.activeButton]}>
-          <Image
-            source={require("../assets/Icons/Home.png")}
-            style={[styles.navIcon, { tintColor: colors.white }]}
-          />
-          <Text style={[styles.navText, styles.activeText]}>Home</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate("MyActivity")}
-        >
-          <Image
-            source={require("../assets/Icons/Home.png")}
-            style={[styles.navIcon, { tintColor: colors.primary }]}
-          />
-          <Text style={styles.navText}>My activity</Text>
-        </TouchableOpacity>
-      </View>
 
       {/* Nome do utilizador autenticado */}
       {user && (

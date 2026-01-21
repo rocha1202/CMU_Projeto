@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import {
   View,
-  Text,
   StyleSheet,
-  Image,
   Dimensions,
   StatusBar,
   Animated,

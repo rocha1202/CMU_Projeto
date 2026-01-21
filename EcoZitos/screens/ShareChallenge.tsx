@@ -21,7 +21,7 @@ export default function ShareChallenge() {
 
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos] = useState<string[]>([]);
 
   const handleSelectStar = (value: number) => {
     setRating(value);
@@ -55,9 +55,11 @@ export default function ShareChallenge() {
       );
 
       const data = await res.json();
-
       if (data.success) {
-        navigation.goBack(); // volta ao ChallengeDetails
+        // Atualiza os pontos localmente
+        user.points = user.points + 100;
+
+        navigation.goBack();
       }
     } catch (error) {
       console.log("Erro ao enviar review:", error);
@@ -126,7 +128,8 @@ export default function ShareChallenge() {
         <Text style={styles.shareButtonText}>Share</Text>
       </TouchableOpacity>
 
-      <Navbar logged={true} />
+        <Navbar logged={true} />
+
     </SafeAreaView>
   );
 }
@@ -217,7 +220,7 @@ const styles = StyleSheet.create({
 
   shareButton: {
     position: "absolute",
-    bottom: 70,
+    bottom: 100,
     left: 20,
     right: 20,
     backgroundColor: colors.primary,

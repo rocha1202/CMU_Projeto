@@ -18,9 +18,6 @@ import Navbar from "../components/Navbar";
 export default function Settings() {
   const navigation = useNavigation<any>();
 
-  const [notifications, setNotifications] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [location, fingerprint] = useState(true);
   const { logout } = useContext(AuthContext)!;
   return (
     <SafeAreaView style={styles.safe}>
@@ -83,9 +80,7 @@ export default function Settings() {
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       {/* FIXED NAVBAR */}
-      <View style={styles.navbarWrapper}>
         <Navbar logged={true} />
-      </View>
     </SafeAreaView>
   );
 }

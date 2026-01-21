@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
@@ -6,7 +6,7 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function NavbarComLogin() {
   const navigation = useNavigation<any>();
-  const { user } = React.useContext(AuthContext);
+  const { user } = useContext(AuthContext)!;
 
   return (
     <View style={styles.navbar}>
@@ -49,17 +49,6 @@ export default function NavbarComLogin() {
         </Text>
       </TouchableOpacity>
 
-      {/* Notifications */}
-      <TouchableOpacity
-        style={styles.navItem}
-        onPress={() => navigation.navigate("Notifications")}
-      >
-        <Image
-          source={require("../assets/Icons/Bell.png")}
-          style={styles.icon}
-        />
-        <Text style={styles.navText}>Notifications</Text>
-      </TouchableOpacity>
 
     </View>
   );
@@ -79,6 +68,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: "100%",
   },
   navItem: {
     alignItems: "center",

@@ -108,6 +108,8 @@ router.post("/:id/review", async (req, res) => {
 
     challenge.reviews.push(newReview);
     await challenge.save();
+    // Depois de guardar a review com sucesso:
+    await User.findByIdAndUpdate(userId, { $inc: { points: 100 } });
 
     res.json({ success: true, review: newReview });
   } catch (error) {
