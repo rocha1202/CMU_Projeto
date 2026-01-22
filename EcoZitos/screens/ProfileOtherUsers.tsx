@@ -97,7 +97,25 @@ export default function ProfileOtherUsers() {
 
     return require("../assets/Challenges/challenge1.png");
   };
+  const badgeImages = [
+    require("../assets/Badges/Badge 1.png"),
+    require("../assets/Badges/Badge 2.png"),
+    require("../assets/Badges/Badge 3.png"),
+    require("../assets/Badges/Badge 4.png"),
+    require("../assets/Badges/Badge 5.png"),
+    require("../assets/Badges/Badge 6.png"),
+    require("../assets/Badges/Badge 7.png"),
+    require("../assets/Badges/Badge 8.png"),
+    require("../assets/Badges/Badge 9.png"),
+  ];
 
+  const trophyImages = [
+    require("../assets/Badges/Achievments 1.png"),
+    require("../assets/Badges/Achievments 2.png"),
+    require("../assets/Badges/Achievments 3.png"),
+    require("../assets/Badges/Achievments 4.png"),
+    require("../assets/Badges/Achievments 5.png"),
+  ];
   useEffect(() => {
     async function fetchUserReviews() {
       try {
@@ -245,12 +263,9 @@ const toggleFollow = async (targetId: string) => {
         {/* BADGES */}
         {selected === "badges" && (
           <View style={styles.grid}>
-            {Array.from({ length: 9 }).map((_, index) => (
+            {badgeImages.map((img, index) => (
               <View key={index} style={styles.gridItem}>
-                <Image
-                  source={require("../assets/Badges/Badge 1.png")}
-                  style={styles.badgeImage}
-                />
+                <Image source={img} style={styles.badgeImage} />
               </View>
             ))}
           </View>
@@ -259,17 +274,13 @@ const toggleFollow = async (targetId: string) => {
         {/* TROPHIES */}
         {selected === "trophies" && (
           <View style={styles.grid}>
-            {Array.from({ length: 9 }).map((_, index) => (
+            {trophyImages.map((img, index) => (
               <View key={index} style={styles.gridItem}>
-                <Image
-                  source={require("../assets/Trophies/Trophy1.png")}
-                  style={styles.badgeImage}
-                />
+                <Image source={img} style={styles.badgeImage} />
               </View>
             ))}
           </View>
         )}
-
         {/* CHALLENGES */}
         {selected === "challenges" && (
           <View style={{ width: "100%" }}>
