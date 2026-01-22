@@ -1,4 +1,5 @@
-import * as React from "react";
+import React, { useEffect, useState, useContext } from "react";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
@@ -13,7 +14,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../theme/colors";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
-import { useContext } from "react";
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();

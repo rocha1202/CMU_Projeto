@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-
 import {
   View,
   Text,
@@ -53,7 +52,6 @@ export default function Profile() {
     { key: "photos", label: "Photo Library" },
   ];
 
-
   const photos = [
     { id: 1, image: require("../assets/Photos/photo1.png") },
     { id: 2, image: require("../assets/Photos/photo2.png") },
@@ -80,6 +78,26 @@ export default function Profile() {
 
     return require("../assets/Challenges/challenge1.png");
   };
+  const badgeImages = [
+    require("../assets/Badges/Badge 1.png"),
+    require("../assets/Badges/Badge 2.png"),
+    require("../assets/Badges/Badge 3.png"),
+    require("../assets/Badges/Badge 4.png"),
+    require("../assets/Badges/Badge 5.png"),
+    require("../assets/Badges/Badge 6.png"),
+    require("../assets/Badges/Badge 7.png"),
+    require("../assets/Badges/Badge 8.png"),
+    require("../assets/Badges/Badge 9.png"),
+  ];
+
+  const trophyImages = [
+    require("../assets/Badges/Achievments 1.png"),
+    require("../assets/Badges/Achievments 2.png"),
+    require("../assets/Badges/Achievments 3.png"),
+    require("../assets/Badges/Achievments 4.png"),
+    require("../assets/Badges/Achievments 5.png"),
+  ];
+
   const [userReviews, setUserReviews] = useState<any[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
   useEffect(() => {
@@ -134,7 +152,7 @@ export default function Profile() {
 
           {/* Pontos reais */}
           <Text style={styles.subInfo}>
-            {"Points: "+user?.points|| "email@example.com"}
+            {"Points: " + user?.points || "email@example.com"}
           </Text>
 
           {/* Mock data */}
@@ -191,12 +209,9 @@ export default function Profile() {
         {/* BADGES */}
         {selected === "badges" && (
           <View style={styles.grid}>
-            {Array.from({ length: 9 }).map((_, index) => (
+            {badgeImages.map((img, index) => (
               <View key={index} style={styles.gridItem}>
-                <Image
-                  source={require("../assets/Badges/Badge 1.png")}
-                  style={styles.badgeImage}
-                />
+                <Image source={img} style={styles.badgeImage} />
               </View>
             ))}
           </View>
@@ -205,12 +220,9 @@ export default function Profile() {
         {/* TROPHIES */}
         {selected === "trophies" && (
           <View style={styles.grid}>
-            {Array.from({ length: 9 }).map((_, index) => (
+            {trophyImages.map((img, index) => (
               <View key={index} style={styles.gridItem}>
-                <Image
-                  source={require("../assets/Trophies/Trophy1.png")}
-                  style={styles.badgeImage}
-                />
+                <Image source={img} style={styles.badgeImage} />
               </View>
             ))}
           </View>
